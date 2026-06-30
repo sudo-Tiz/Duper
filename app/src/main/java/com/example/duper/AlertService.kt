@@ -81,8 +81,10 @@ class AlertService : Service() {
                 createNotificationChannel()
                 val notification = createNotification()
                 startForeground(1, notification)
+                val duration = getSharedPreferences("duper_prefs", MODE_PRIVATE)
+                    .getInt("ring_duration", 30) * 1000L
 
-                wakeLock?.acquire(5 * 60 * 1000L)
+                wakeLock?.acquire(duration)
                 startRing()
             }
 
