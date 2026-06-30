@@ -5,9 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.duper"
-    compileSdk {
-        version = release(37)
-    }
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "fr.sudotiz.duper"
