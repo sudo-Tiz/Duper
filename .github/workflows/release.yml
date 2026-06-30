@@ -40,7 +40,6 @@ jobs:
         env:
           KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
         run: |
-          mkdir -p app
           echo "$KEYSTORE_B64" | base64 -d > app/my-release-key.jks
 
       - name: Install semantic-release
@@ -48,7 +47,7 @@ jobs:
 
       - name: Build signed APK
         env:
-          KEYSTORE_FILE: app/my-release-key.jks
+          KEYSTORE_FILE: my-release-key.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
