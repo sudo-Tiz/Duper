@@ -4,6 +4,10 @@ Android app to find your phone remotely via SMS commands.
 
 > **Why "Duper"?** It's French *verlan* (slang made by reversing syllables) for *perdu* → **du-per**. *Perdu* means "lost" in French. You get it.
 
+|  |  |
+| :---: | :---: |
+| ![alt1](assets/screenshot1.png) | ![alt2](assets/screenshot2.png) |   
+| | |
 ## Features
 
 - **Remote Ring** – Trigger alarm and LED flash at max volume
