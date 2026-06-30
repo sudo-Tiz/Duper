@@ -1,4 +1,4 @@
-name: Release APK (semantic-release)
+name: Release APK
 
 on:
   push:
@@ -11,6 +11,7 @@ jobs:
     permissions:
       contents: write
       packages: write
+      issues: write
 
     steps:
       - uses: actions/checkout@v6
@@ -53,20 +54,10 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew :app:assembleRelease
 
-      - name: semantic-release (tag + GitHub Release)
+      - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
-
-      - name: Get latest tag
-        id: tag
-        run: echo "tag=$(git describe --tags --abbrev=0)" >> "$GITHUB_OUTPUT"
-
-      - name: Upload APK to GitHub Release
-        uses: softprops/action-gh-release@v3
-        with:
-          tag_name: ${{ steps.tag.outputs.tag }}
-          files: app/build/outputs/apk/release/*.apk
 
       - name: Clean up keystore
         if: always()
