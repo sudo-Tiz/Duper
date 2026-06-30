@@ -6,8 +6,9 @@ Android app to find your phone remotely via SMS commands.
 
 |  |  |
 | :---: | :---: |
-| ![alt1](assets/screenshot1.png) | ![alt2](assets/screenshot2.png) |   
+| ![screenshot1](assets/screenshot1.png) | ![screenshot2](assets/screenshot2.png) |   
 | | |
+
 ## Features
 
 - **Remote Ring** – Trigger alarm and LED flash at max volume
@@ -16,12 +17,13 @@ Android app to find your phone remotely via SMS commands.
 - **Customizable** – Set your own command prefix and password
 - **Auto-GPS** – Optionally enable location services automatically (requires ADB setup)
 
+
 ## Quick Start
 
 1. Download latest APK from [Releases](https://github.com/sudo-tiz/Duper/releases)
 2. Install and grant SMS/Location permissions
-3. Set your command prefix and optional password in settings
-4. From another phone, send: `<prefix> ring [password]` or `<prefix> locate [password]`
+3. From another phone, send: `<prefix> ring [password]` or `<prefix> locate [password]`
+
 
 ## Commands
 
@@ -37,6 +39,16 @@ Android app to find your phone remotely via SMS commands.
 - **Camera/Flashlight** – Visual alert
 - **Background Location** – Track when app is closed (optional but recommended)
 
+### ⚠️ Android 15+ Note 
+> Android 15+ blocks SMS permissions by default.
+
+If the SMS toggle is greyed out:
+1. Go to **Settings > Apps > Duper**.
+2. Tap the **three-dot menu (⋮)** in the top-right corner.
+   *(Note: On some devices, you may need to tap "Permissions" first to see this menu).*
+3. Select **Allow restricted settings**. 
+4. Return to **Permissions** and grant **SMS** access.
+
 ## Auto-Enable GPS (Optional)
 
 If your phone's location services are turned off, the locate command will fail by default.
@@ -47,13 +59,6 @@ adb shell pm grant fr.sudotiz.duper android.permission.WRITE_SECURE_SETTINGS
 ```
 
 Requires USB debugging enabled. One-time setup.
-
-## Building
-
-```sh
-git clone https://github.com/sudo-tiz/Duper.git
-# Open in Android Studio and build
-```
 
 ## License
 
