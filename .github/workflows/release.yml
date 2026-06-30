@@ -56,7 +56,7 @@ jobs:
       - name: semantic-release (tag + GitHub Release)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release --config .github/semantic-release.config.cjs
+        run: npx semantic-release
 
       - name: Get latest tag
         id: tag
