@@ -1,0 +1,27 @@
+# Android build outputs
+*.iml
+.gradle/
+/build/
+/captures/
+.externalNativeBuild/
+.cxx/
+/app/release/
+
+# Local config (never commit — contains SDK path & secrets)
+local.properties
+
+# Signing keystores — keep out of git
+*.keystore
+*.jks
+
+# IntelliJ / Android Studio
+/.idea/
+
+# macOS
+.DS_Store
+
+# Linux
+*~
+
+# Windows
+Thumbs.db
