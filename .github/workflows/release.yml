@@ -21,7 +21,7 @@ jobs:
         env:
           KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
         run: |
-          echo "$KEYSTORE_B64" | base64 -d > my-release-key.jks
+          echo "$KEYSTORE_B64" | base64 -d > app/my-release-key.jks
 
       - name: Build signed release APK
         env:
