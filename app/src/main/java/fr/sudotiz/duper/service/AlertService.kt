@@ -1,4 +1,4 @@
-package com.example.duper
+package fr.sudotiz.duper.service
 
 import android.app.KeyguardManager
 import android.app.Notification
@@ -21,6 +21,8 @@ import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
+import fr.sudotiz.duper.DuperApplication
+import fr.sudotiz.duper.R
 
 class AlertService : Service() {
 
@@ -34,11 +36,13 @@ class AlertService : Service() {
     private var flashOn = false
     private var isRinging = false
 
+    private val prefs by lazy { (applicationContext as DuperApplication).preferencesRepository }
+
     private val flashRunnable = object : Runnable {
         override fun run() {
             if (isFlashing) {
                 toggleFlash()
-                handler.postDelayed(this, 500)
+                handler.postDelayed(this, FLASH_INTERVAL_MS)
             }
         }
     }
@@ -48,10 +52,10 @@ class AlertService : Service() {
             if (isRinging) {
                 val isLocked = keyguardManager?.isKeyguardLocked ?: true
                 if (!isLocked) {
-                    Log.d("AlertService", "Device is unlocked, stopping alert")
+                    Log.d(TAG, "Device is unlocked, stopping alert")
                     stopAlert()
                 } else {
-                    handler.postDelayed(this, 1000)
+                    handler.postDelayed(this, UNLOCK_CHECK_INTERVAL_MS)
                 }
             }
         }
@@ -65,35 +69,30 @@ class AlertService : Service() {
         try {
             cameraId = cameraManager?.cameraIdList?.get(0)
         } catch (e: CameraAccessException) {
-            Log.e("AlertService", "Error accessing camera", e)
+            Log.e(TAG, "Error accessing camera", e)
         }
 
         val powerManager = getSystemService(POWER_SERVICE) as PowerManager
         wakeLock = powerManager.newWakeLock(
             PowerManager.PARTIAL_WAKE_LOCK,
-            "Duper::AlertWakeLock"
+            WAKE_LOCK_TAG
         )
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
-            "START_RING" -> {
+            ACTION_START_RING -> {
                 createNotificationChannel()
-                val notification = createNotification()
-                startForeground(1, notification)
-                val duration = getSharedPreferences("duper_prefs", MODE_PRIVATE)
-                    .getInt("ring_duration", 30) * 1000L
-
+                startForeground(NOTIFICATION_ID, createNotification())
+                val duration = prefs.ringDuration * 1000L
                 wakeLock?.acquire(duration)
                 startRing()
             }
-
-            "STOP_RING" -> {
-                Log.d("AlertService", "Stop command received")
+            ACTION_STOP_RING -> {
+                Log.d(TAG, "Stop command received")
                 stopAlert()
             }
         }
-
         return START_NOT_STICKY
     }
 
@@ -101,18 +100,12 @@ class AlertService : Service() {
         if (isRinging) return
         isRinging = true
 
-        val prefs = getSharedPreferences("duper_prefs", MODE_PRIVATE)
-        val duration = prefs.getInt("ring_duration", 30) * 1000L
-        val ringtoneUri = prefs.getString("ringtone_uri", null)
-
-        startRingtone(ringtoneUri)
+        val duration = prefs.ringDuration * 1000L
+        startRingtone(prefs.ringtoneUri)
         startFlashing()
 
         handler.post(unlockCheckRunnable)
-
-        handler.postDelayed({
-            stopAlert()
-        }, duration)
+        handler.postDelayed({ stopAlert() }, duration)
     }
 
     private fun startRingtone(customUri: String?) {
@@ -139,17 +132,16 @@ class AlertService : Service() {
                 prepare()
                 start()
             }
-
-            Log.d("AlertService", "Ringtone started")
+            Log.d(TAG, "Ringtone started")
         } catch (e: Exception) {
-            Log.e("AlertService", "Error starting ringtone", e)
+            Log.e(TAG, "Error starting ringtone", e)
         }
     }
 
     private fun startFlashing() {
         isFlashing = true
         handler.post(flashRunnable)
-        Log.d("AlertService", "Flash started")
+        Log.d(TAG, "Flash started")
     }
 
     private fun toggleFlash() {
@@ -159,15 +151,13 @@ class AlertService : Service() {
                 flashOn = !flashOn
             }
         } catch (e: CameraAccessException) {
-            Log.e("AlertService", "Error toggling flash", e)
+            Log.e(TAG, "Error toggling flash", e)
         }
     }
 
     private fun stopAlert() {
         mediaPlayer?.apply {
-            if (isPlaying) {
-                stop()
-            }
+            if (isPlaying) stop()
             release()
         }
         mediaPlayer = null
@@ -176,22 +166,16 @@ class AlertService : Service() {
         handler.removeCallbacks(flashRunnable)
         handler.removeCallbacks(unlockCheckRunnable)
         try {
-            cameraId?.let { id ->
-                cameraManager?.setTorchMode(id, false)
-            }
+            cameraId?.let { id -> cameraManager?.setTorchMode(id, false) }
             flashOn = false
         } catch (e: CameraAccessException) {
-            Log.e("AlertService", "Error stopping flash", e)
+            Log.e(TAG, "Error stopping flash", e)
         }
 
-        wakeLock?.let {
-            if (it.isHeld) {
-                it.release()
-            }
-        }
+        wakeLock?.let { if (it.isHeld) it.release() }
 
         isRinging = false
-        Log.d("AlertService", "Alert stopped")
+        Log.d(TAG, "Alert stopped")
         stopSelf()
     }
 
@@ -199,21 +183,20 @@ class AlertService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Duper Alerts",
+                getString(R.string.notification_channel_alert_name),
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "Notifications for Duper SMS alerts"
+                description = getString(R.string.notification_channel_alert_description)
             }
-
-            val notificationManager = getSystemService(NotificationManager::class.java)
-            notificationManager.createNotificationChannel(channel)
+            getSystemService(NotificationManager::class.java)
+                .createNotificationChannel(channel)
         }
     }
 
     private fun createNotification(): Notification {
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Duper Ring")
-            .setContentText("Alert active...")
+            .setContentTitle(getString(R.string.notification_alert_title))
+            .setContentText(getString(R.string.notification_alert_text))
             .setSmallIcon(android.R.drawable.ic_dialog_alert)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()
@@ -227,6 +210,14 @@ class AlertService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     companion object {
+        private const val TAG = "AlertService"
         private const val CHANNEL_ID = "duper_alerts"
+        private const val NOTIFICATION_ID = 1
+        private const val WAKE_LOCK_TAG = "Duper::AlertWakeLock"
+        private const val FLASH_INTERVAL_MS = 500L
+        private const val UNLOCK_CHECK_INTERVAL_MS = 1000L
+
+        const val ACTION_START_RING = "fr.sudotiz.duper.START_RING"
+        const val ACTION_STOP_RING = "fr.sudotiz.duper.STOP_RING"
     }
 }

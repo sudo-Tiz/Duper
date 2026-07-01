@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.duper"
+    namespace = "fr.sudotiz.duper"
     compileSdk = 37
 
     defaultConfig {
