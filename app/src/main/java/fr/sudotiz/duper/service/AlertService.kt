@@ -35,6 +35,7 @@ class AlertService : Service() {
     private var isFlashing = false
     private var flashOn = false
     private var isRinging = false
+    private var originalAlarmVolume: Int = -1
 
     private val prefs by lazy { (applicationContext as DuperApplication).preferencesRepository }
 
@@ -118,6 +119,7 @@ class AlertService : Service() {
                 setDataSource(applicationContext, uri)
 
                 val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
+                originalAlarmVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM)
                 val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM)
                 audioManager.setStreamVolume(AudioManager.STREAM_ALARM, maxVolume, 0)
 
@@ -173,6 +175,12 @@ class AlertService : Service() {
         }
 
         wakeLock?.let { if (it.isHeld) it.release() }
+
+        if (originalAlarmVolume >= 0) {
+            val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
+            audioManager.setStreamVolume(AudioManager.STREAM_ALARM, originalAlarmVolume, 0)
+            originalAlarmVolume = -1
+        }
 
         isRinging = false
         Log.d(TAG, "Alert stopped")
