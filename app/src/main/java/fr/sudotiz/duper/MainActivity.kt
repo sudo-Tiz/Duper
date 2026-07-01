@@ -3,6 +3,7 @@ package fr.sudotiz.duper
 import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
@@ -33,10 +34,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -51,7 +50,6 @@ import fr.sudotiz.duper.ui.components.StatusCard
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import android.content.pm.PackageManager
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +70,17 @@ class MainActivity : ComponentActivity() {
 fun DuperApp(prefs: PreferencesRepository) {
     val context = LocalContext.current
 
+    val strDefaultRingtone = stringResource(R.string.ring_default_ringtone)
+    val strPrefixEmpty = stringResource(R.string.error_prefix_empty)
+    val strPrefixEmptyCommands = stringResource(R.string.error_prefix_empty_commands)
+    val strMinOneSecond = stringResource(R.string.error_min_one_second)
+    val strRingPickerTitle = stringResource(R.string.ring_picker_title)
+    val strIntervalTooLongTemplate = stringResource(R.string.error_interval_less_than_duration)
+
+    val strCustomRingtone = stringResource(R.string.ring_custom_ringtone)
+
+    fun intervalError(duration: Int) = String.format(strIntervalTooLongTemplate, duration)
+
     var ringEnabled by remember { mutableStateOf(prefs.ringEnabled) }
     var locateEnabled by remember { mutableStateOf(prefs.locateEnabled) }
     var commandPrefix by remember { mutableStateOf(prefs.commandPrefix) }
@@ -82,18 +91,17 @@ fun DuperApp(prefs: PreferencesRepository) {
     var ringtoneUri by remember { mutableStateOf(prefs.ringtoneUri) }
     var ringtoneName by remember {
         mutableStateOf(
-            ringtoneUri?.toUri()?.let { getRingtoneName(context, it) }
-                ?: context.getString(R.string.ring_default_ringtone)
+            ringtoneUri?.toUri()?.let { getRingtoneName(context, it, strCustomRingtone) } ?: strDefaultRingtone
         )
     }
 
     var prefixError by remember {
-        mutableStateOf(if (prefs.commandPrefix.isBlank()) context.getString(R.string.error_prefix_empty) else null)
+        mutableStateOf(if (prefs.commandPrefix.isBlank()) strPrefixEmpty else null)
     }
-    var ringDurationError by remember { mutableStateOf(validatePositiveSeconds(ringDuration, context)) }
-    var locateDurationError by remember { mutableStateOf(validatePositiveSeconds(locateDuration, context)) }
+    var ringDurationError by remember { mutableStateOf(validatePositiveSeconds(ringDuration, strMinOneSecond)) }
+    var locateDurationError by remember { mutableStateOf(validatePositiveSeconds(locateDuration, strMinOneSecond)) }
     var locateIntervalError by remember {
-        mutableStateOf(validateLocateInterval(locateInterval, locateDuration, context))
+        mutableStateOf(validateLocateInterval(locateInterval, locateDuration, strMinOneSecond, ::intervalError))
     }
     var gpsExpanded by remember { mutableStateOf(false) }
 
@@ -139,8 +147,8 @@ fun DuperApp(prefs: PreferencesRepository) {
     }
 
     fun persistLocateValuesIfValid(durationValue: String, intervalValue: String) {
-        locateDurationError = validatePositiveSeconds(durationValue, context)
-        locateIntervalError = validateLocateInterval(intervalValue, durationValue, context)
+        locateDurationError = validatePositiveSeconds(durationValue, strMinOneSecond)
+        locateIntervalError = validateLocateInterval(intervalValue, durationValue, strMinOneSecond, ::intervalError)
         if (locateDurationError == null && locateIntervalError == null) {
             prefs.locateDuration = durationValue.toInt()
             prefs.locateInterval = intervalValue.toInt()
@@ -171,7 +179,7 @@ fun DuperApp(prefs: PreferencesRepository) {
             }
             if (uri != null) {
                 ringtoneUri = uri.toString()
-                ringtoneName = getRingtoneName(context, uri)
+                ringtoneName = getRingtoneName(context, uri, strCustomRingtone)
                 prefs.ringtoneUri = uri.toString()
             }
         }
@@ -217,7 +225,7 @@ fun DuperApp(prefs: PreferencesRepository) {
                 onPrefixChange = { newValue ->
                     commandPrefix = newValue
                     if (newValue.isBlank()) {
-                        prefixError = context.getString(R.string.error_prefix_empty_commands)
+                        prefixError = strPrefixEmptyCommands
                     } else {
                         prefixError = null
                         prefs.commandPrefix = newValue.trim()
@@ -243,7 +251,7 @@ fun DuperApp(prefs: PreferencesRepository) {
                 onDurationChange = { newValue ->
                     if (newValue.isEmpty() || newValue.all { c -> c.isDigit() }) {
                         ringDuration = newValue
-                        ringDurationError = validatePositiveSeconds(newValue, context)
+                        ringDurationError = validatePositiveSeconds(newValue, strMinOneSecond)
                         val dur = newValue.toIntOrNull()
                         if (ringDurationError == null && dur != null) {
                             prefs.ringDuration = dur
@@ -253,7 +261,7 @@ fun DuperApp(prefs: PreferencesRepository) {
                 onChooseRingtone = {
                     val intent = android.content.Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
                         putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
-                        putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, context.getString(R.string.ring_picker_title))
+                        putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, strRingPickerTitle)
                         putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true)
                         putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false)
                         ringtoneUri?.let {
@@ -302,20 +310,21 @@ fun formatTimestamp(timeMs: Long): String {
     return SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(Date(timeMs))
 }
 
-fun validatePositiveSeconds(value: String, context: Context): String? {
+fun validatePositiveSeconds(value: String, errorMessage: String): String? {
     val seconds = value.toIntOrNull()
-    return if (seconds == null || seconds < 1) context.getString(R.string.error_min_one_second) else null
+    return if (seconds == null || seconds < 1) errorMessage else null
 }
 
-fun validateLocateInterval(intervalValue: String, durationValue: String, context: Context): String? {
+fun validateLocateInterval(
+    intervalValue: String,
+    durationValue: String,
+    errorMinOneSecond: String,
+    errorIntervalTooLong: (Int) -> String,
+): String? {
     val interval = intervalValue.toIntOrNull()
-    if (interval == null || interval < 1) return context.getString(R.string.error_min_one_second)
+    if (interval == null || interval < 1) return errorMinOneSecond
     val duration = durationValue.toIntOrNull() ?: return null
-    return if (interval >= duration) {
-        context.getString(R.string.error_interval_less_than_duration, duration)
-    } else {
-        null
-    }
+    return if (interval >= duration) errorIntervalTooLong(duration) else null
 }
 
 fun checkPermissions(context: Context): Boolean {
@@ -350,10 +359,10 @@ fun requestPermissions(launcher: androidx.activity.result.ActivityResultLauncher
     launcher.launch(permissions.toTypedArray())
 }
 
-fun getRingtoneName(context: Context, uri: Uri): String {
+fun getRingtoneName(context: Context, uri: Uri, fallback: String = "Custom ringtone"): String {
     return try {
         RingtoneManager.getRingtone(context, uri).getTitle(context)
     } catch (_: Exception) {
-        context.getString(R.string.ring_custom_ringtone)
+        fallback
     }
 }

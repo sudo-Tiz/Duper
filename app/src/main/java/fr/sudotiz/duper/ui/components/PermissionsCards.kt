@@ -1,6 +1,5 @@
 package fr.sudotiz.duper.ui.components
 
-import android.Manifest
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth

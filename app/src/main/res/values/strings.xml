@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Duper</string>
+    <string name="app_name" translatable="false">Duper</string>
 
     <!-- Permissions -->
     <string name="permissions_title">Permissions Required</string>
