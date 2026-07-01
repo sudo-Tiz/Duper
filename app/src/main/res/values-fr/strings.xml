@@ -1,0 +1,76 @@
+<resources>
+    <!-- Permissions -->
+    <string name="permissions_title">Permissions requises</string>
+    <string name="permissions_body">L\'application a besoin de permissions pour fonctionner.</string>
+    <string name="permissions_button">Accorder les permissions</string>
+    <string name="restricted_settings_title">⚠️ Étape supplémentaire requise (Android 13+)</string>
+    <string name="restricted_settings_body">Si la fenêtre de permission n\'apparaît pas, Android la bloque. Aller dans :\n\nParamètres → Applications → Duper → ⋮ (en haut à droite) → Autoriser les paramètres restreints\n\nPuis retapper sur Accorder les permissions.</string>
+    <string name="bg_location_title">⚠️ Localisation en arrière-plan requise</string>
+    <string name="bg_location_body">Le mode Localiser a besoin de la localisation en arrière-plan pour fonctionner quand l\'app est fermée. Sans cela, les commandes locate échoueront.</string>
+    <string name="bg_location_button">Accorder la localisation en arrière-plan</string>
+
+    <!-- Status card -->
+    <string name="status_title">📡 Statut</string>
+    <string name="status_last_command_never">Dernière commande reçue : Jamais</string>
+    <string name="status_last_command">Dernière commande reçue : %1$s de %2$s\n%3$s</string>
+    <string name="status_last_position_never">Dernière position envoyée : Jamais</string>
+    <string name="status_last_position">Dernière position envoyée : %1$s, %2$s\n%3$s</string>
+    <string name="unknown">inconnu</string>
+
+    <!-- Command prefix card -->
+    <string name="prefix_title">Préfixe de commande</string>
+    <string name="prefix_label">Préfixe (ex. : \'duper\')</string>
+    <string name="prefix_code_label">Mot de passe (optionnel)</string>
+    <string name="prefix_code_placeholder">ex. : abc123</string>
+    <string name="prefix_commands_hint">Commandes : \"%1$s ring%2$s\" · \"%1$s locate%2$s\"</string>
+
+    <!-- Ring mode card -->
+    <string name="ring_title">Mode Sonnerie</string>
+    <string name="ring_enable_label">Activer le mode Sonnerie</string>
+    <string name="ring_duration_label">Durée de sonnerie (secondes)</string>
+    <string name="ring_current_ringtone">Sonnerie actuelle : %1$s</string>
+    <string name="ring_choose_ringtone">Choisir une sonnerie</string>
+    <string name="ring_picker_title">Choisir une sonnerie</string>
+    <string name="ring_default_ringtone">Alarme par défaut</string>
+    <string name="ring_custom_ringtone">Sonnerie personnalisée</string>
+
+    <!-- Locate mode card -->
+    <string name="locate_title">Mode Localisation</string>
+    <string name="locate_enable_label">Activer le mode Localisation</string>
+    <string name="locate_duration_label">Durée totale (secondes)</string>
+    <string name="locate_duration_hint">Combien de temps suivre la position</string>
+    <string name="locate_interval_label">Intervalle d\'envoi (secondes)</string>
+    <string name="locate_interval_hint">À quelle fréquence envoyer la position</string>
+
+    <!-- GPS card -->
+    <string name="gps_title_granted">✅ Activation GPS automatique</string>
+    <string name="gps_title_not_granted">Activation GPS automatique (Avancé)</string>
+    <string name="gps_body_granted">L\'application peut activer la localisation automatiquement lors de la réception d\'une commande \'locate\'.</string>
+    <string name="gps_body_not_granted">Par défaut, Android ne laisse pas les applications activer la localisation. Pour permettre à Duper de l\'activer automatiquement, accordez une permission spéciale une fois via ADB :\n\n1. Sur un ordinateur, installez Android Platform Tools (ADB).\n2. Activez le débogage USB sur ce téléphone (Paramètres > Options développeur).\n3. Connectez le téléphone via USB.\n4. Exécutez cette commande :</string>
+    <string name="gps_adb_command">adb shell pm grant fr.sudotiz.duper android.permission.WRITE_SECURE_SETTINGS</string>
+    <string name="gps_footer_not_granted">Cela ne doit être fait qu\'une seule fois. La permission persiste après les redémarrages. Sans cela, Duper répondra par SMS que la localisation est désactivée au lieu de l\'activer.</string>
+
+    <!-- Validation errors -->
+    <string name="error_prefix_empty">Le préfixe ne peut pas être vide</string>
+    <string name="error_prefix_empty_commands">Le préfixe ne peut pas être vide — les commandes ne fonctionneraient plus</string>
+    <string name="error_min_one_second">Doit être au moins 1 seconde</string>
+    <string name="error_interval_less_than_duration">L\'intervalle doit être inférieur à la durée (%1$ds)</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_alert_name">Alertes Duper</string>
+    <string name="notification_channel_alert_description">Notifications pour les alertes SMS de Duper</string>
+    <string name="notification_alert_title">Duper Ring</string>
+    <string name="notification_alert_text">Alerte en cours…</string>
+    <string name="notification_channel_location_name">Localisation Duper</string>
+    <string name="notification_channel_location_description">Notifications de suivi de position</string>
+    <string name="notification_location_title">Duper Localise</string>
+    <string name="notification_location_text">Suivi de position en cours…</string>
+
+    <!-- SMS messages -->
+    <string name="sms_ring_activated">Duper : Sonnerie activée, le téléphone sonne maintenant</string>
+    <string name="sms_locate_received">Duper : Commande locate reçue, en cours…</string>
+    <string name="sms_location_permission_denied">Duper : Permission de localisation non accordée, impossible de localiser</string>
+    <string name="sms_location_disabled">Duper : La localisation est DÉSACTIVÉE et je ne peux pas l\'activer. Accordez WRITE_SECURE_SETTINGS via ADB pour permettre l\'activation automatique.</string>
+    <string name="sms_location_enabling">Duper : Localisation DÉSACTIVÉE, tentative d\'activation…</string>
+    <string name="sms_location_started">Duper : Localisation ON (%1$s), envoi des coordonnées…</string>
+</resources>
