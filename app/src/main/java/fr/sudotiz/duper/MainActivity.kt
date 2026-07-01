@@ -41,6 +41,7 @@ import fr.sudotiz.duper.ui.components.CommandPrefixCard
 import fr.sudotiz.duper.ui.components.GpsCard
 import fr.sudotiz.duper.ui.components.LocateModeCard
 import fr.sudotiz.duper.ui.components.PermissionsCard
+import fr.sudotiz.duper.ui.components.RestrictedSettingsCard
 import fr.sudotiz.duper.ui.components.RingModeCard
 import fr.sudotiz.duper.ui.components.StatusCard
 import java.text.SimpleDateFormat
@@ -125,6 +126,9 @@ fun DuperApp(viewModel: MainViewModel = viewModel()) {
                         permissionLauncher.launch(MainViewModel.requiredPermissions().toTypedArray())
                     }
                 )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    RestrictedSettingsCard()
+                }
             }
 
             if (viewModel.hasPermissions && !viewModel.hasBackgroundLocation &&

@@ -5,6 +5,8 @@
     <string name="permissions_title">Permissions Required</string>
     <string name="permissions_body">The app needs permissions to function.</string>
     <string name="permissions_button">Grant Permissions</string>
+    <string name="restricted_settings_title">⚠️ Extra Step Required (Android 13+)</string>
+    <string name="restricted_settings_body">If the permission dialog does not appear, Android is blocking it. Go to:\n\nSettings → Apps → Duper → ⋮ (top-right) → Allow restricted settings\n\nThen tap Grant Permissions again.</string>
     <string name="bg_location_title">⚠️ Background Location Required</string>
     <string name="bg_location_body">Locate mode needs Background Location to work when the app is closed. Without it, locate commands will fail.</string>
     <string name="bg_location_button">Grant Background Location</string>
