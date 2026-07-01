@@ -44,9 +44,7 @@ import fr.sudotiz.duper.ui.components.PermissionsCard
 import fr.sudotiz.duper.ui.components.RestrictedSettingsCard
 import fr.sudotiz.duper.ui.components.RingModeCard
 import fr.sudotiz.duper.ui.components.StatusCard
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import fr.sudotiz.duper.util.getRingtoneName
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -141,15 +139,7 @@ fun DuperApp(viewModel: MainViewModel = viewModel()) {
                 )
             }
 
-            StatusCard(
-                lastCommandTime = viewModel.lastCommandTime,
-                lastCommandType = viewModel.lastCommandType,
-                lastCommandSender = viewModel.lastCommandSender,
-                lastLocationTime = viewModel.lastLocationTime,
-                lastLocationLat = viewModel.lastLocationLat,
-                lastLocationLng = viewModel.lastLocationLng,
-                formatTimestamp = ::formatTimestamp
-            )
+            StatusCard(status = viewModel.status)
 
             CommandPrefixCard(
                 commandPrefix = viewModel.commandPrefix,
@@ -197,17 +187,6 @@ fun DuperApp(viewModel: MainViewModel = viewModel()) {
                 onExpandToggle = viewModel::toggleGpsExpanded,
             )
         }
-    }
-}
-
-fun formatTimestamp(timeMs: Long): String =
-    SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).format(Date(timeMs))
-
-fun getRingtoneName(context: android.content.Context, uri: Uri, fallback: String = "Custom ringtone"): String {
-    return try {
-        RingtoneManager.getRingtone(context, uri).getTitle(context)
-    } catch (_: Exception) {
-        fallback
     }
 }
 
