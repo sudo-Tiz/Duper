@@ -5,7 +5,7 @@
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     ["@semantic-release/exec", {
-      "prepareCmd": "IFS='.' read -r MAJOR MINOR PATCH <<< '${nextRelease.version}' && VERSION_CODE=$((MAJOR * 1000000 + MINOR * 1000 + PATCH)) && sed -i \"s/versionCode = [0-9]*/versionCode = $VERSION_CODE/\" app/build.gradle.kts && sed -i \"s/versionName = \\\"[^\\\"]*\\\"/versionName = \\\"${nextRelease.version}\\\"/\" app/build.gradle.kts",
+      "prepareCmd": "sh .github/scripts/set-version.sh ${nextRelease.version}",
       "publishCmd": "./gradlew :app:assembleRelease"
     }],
     ["@semantic-release/github", {
