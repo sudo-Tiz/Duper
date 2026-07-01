@@ -1,0 +1,17 @@
+Duper vous permet de contrôler votre téléphone Android à distance via de simples SMS — sans connexion internet, sans compte, sans serveur.
+
+Envoyez "duper ring" pour faire sonner votre téléphone au volume maximum avec le flash qui clignote, même en mode silencieux. Pratique quand vous avez perdu votre téléphone à proximité.
+
+Envoyez "duper locate" pour recevoir vos coordonnées GPS par SMS à intervalles réguliers. Utile en cas d'urgence ou quand vous prêtez votre téléphone à quelqu'un.
+
+Fonctionnalités :
+• Sonnerie avec flash, contourne le mode silencieux
+• Suivi GPS par SMS
+• Les deux modes s'arrêtent quand le téléphone est déverrouillé
+• Préfixe, durée et intervalle configurables
+• Fonctionne entièrement hors ligne via SMS
+• Aucun compte, aucun cloud, aucun tracking
+
+Le préfixe est configurable pour que seules les personnes qui le connaissent puissent déclencher les commandes.
+
+Open source sous GPL-3.0.
