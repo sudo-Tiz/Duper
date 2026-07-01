@@ -14,17 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import fr.sudotiz.duper.R
+import fr.sudotiz.duper.StatusState
+import fr.sudotiz.duper.util.formatTimestamp
 
 @Composable
-fun StatusCard(
-    lastCommandTime: Long,
-    lastCommandType: String?,
-    lastCommandSender: String?,
-    lastLocationTime: Long,
-    lastLocationLat: Double?,
-    lastLocationLng: Double?,
-    formatTimestamp: (Long) -> String,
-) {
+fun StatusCard(status: StatusState) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -39,28 +33,28 @@ fun StatusCard(
             Text(stringResource(R.string.status_title), style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                if (lastCommandTime == 0L) {
+                if (status.lastCommandTime == 0L) {
                     stringResource(R.string.status_last_command_never)
                 } else {
                     stringResource(
                         R.string.status_last_command,
-                        lastCommandType ?: stringResource(R.string.unknown),
-                        lastCommandSender ?: stringResource(R.string.unknown),
-                        formatTimestamp(lastCommandTime)
+                        status.lastCommandType?.label ?: stringResource(R.string.unknown),
+                        status.lastCommandSender ?: stringResource(R.string.unknown),
+                        formatTimestamp(status.lastCommandTime)
                     )
                 },
                 style = MaterialTheme.typography.bodySmall
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                if (lastLocationTime == 0L || lastLocationLat == null || lastLocationLng == null) {
+                if (status.lastLocationTime == 0L || status.lastLocationLat == null || status.lastLocationLng == null) {
                     stringResource(R.string.status_last_position_never)
                 } else {
                     stringResource(
                         R.string.status_last_position,
-                        lastLocationLat,
-                        lastLocationLng,
-                        formatTimestamp(lastLocationTime)
+                        status.lastLocationLat,
+                        status.lastLocationLng,
+                        formatTimestamp(status.lastLocationTime)
                     )
                 },
                 style = MaterialTheme.typography.bodySmall

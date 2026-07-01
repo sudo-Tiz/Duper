@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.provider.Telephony
 import android.util.Log
+import fr.sudotiz.duper.data.CommandType
 import fr.sudotiz.duper.DuperApplication
 import fr.sudotiz.duper.R
 import fr.sudotiz.duper.service.AlertService
@@ -37,7 +38,7 @@ class SmsReceiver : BroadcastReceiver() {
             if (messageLower == ringCommand && ringEnabled) {
                 Log.d(TAG, "Ring command detected! Starting alert...")
                 SmsUtil.send(context, sender, context.getString(R.string.sms_ring_activated))
-                prefs.recordCommand("ring", sender)
+                prefs.recordCommand(CommandType.RING, sender)
 
                 val alertIntent = Intent(context, AlertService::class.java).apply {
                     action = AlertService.ACTION_START_RING
@@ -48,7 +49,7 @@ class SmsReceiver : BroadcastReceiver() {
             if (messageLower == locateCommand && locateEnabled) {
                 Log.d(TAG, "Locate command detected! Starting location tracking...")
                 SmsUtil.send(context, sender, context.getString(R.string.sms_locate_received))
-                prefs.recordCommand("locate", sender)
+                prefs.recordCommand(CommandType.LOCATE, sender)
 
                 val locationIntent = Intent(context, LocationService::class.java).apply {
                     action = LocationService.ACTION_START_LOCATE

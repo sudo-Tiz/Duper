@@ -4,6 +4,11 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 
+enum class CommandType {
+    RING, LOCATE;
+    val label: String get() = name.lowercase()
+}
+
 class PreferencesRepository(context: Context) {
 
     private val prefs: SharedPreferences =
@@ -49,9 +54,10 @@ class PreferencesRepository(context: Context) {
         get() = prefs.getString(PreferenceKeys.LAST_COMMAND_SENDER, null)
         set(value) = prefs.edit { putString(PreferenceKeys.LAST_COMMAND_SENDER, value) }
 
-    var lastCommandType: String?
+    var lastCommandType: CommandType?
         get() = prefs.getString(PreferenceKeys.LAST_COMMAND_TYPE, null)
-        set(value) = prefs.edit { putString(PreferenceKeys.LAST_COMMAND_TYPE, value) }
+            ?.let { runCatching { CommandType.valueOf(it) }.getOrNull() }
+        set(value) = prefs.edit { putString(PreferenceKeys.LAST_COMMAND_TYPE, value?.name) }
 
     var lastLocationTime: Long
         get() = prefs.getLong(PreferenceKeys.LAST_LOCATION_TIME, 0L)
@@ -71,11 +77,11 @@ class PreferencesRepository(context: Context) {
             else remove(PreferenceKeys.LAST_LOCATION_LNG)
         }
 
-    fun recordCommand(type: String, sender: String) {
+    fun recordCommand(type: CommandType, sender: String) {
         prefs.edit {
             putLong(PreferenceKeys.LAST_COMMAND_TIME, System.currentTimeMillis())
             putString(PreferenceKeys.LAST_COMMAND_SENDER, sender)
-            putString(PreferenceKeys.LAST_COMMAND_TYPE, type)
+            putString(PreferenceKeys.LAST_COMMAND_TYPE, type.name)
         }
     }
 

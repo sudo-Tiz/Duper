@@ -6,11 +6,20 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
+import fr.sudotiz.duper.data.CommandType
+
+data class StatusState(
+    val lastCommandTime: Long = 0L,
+    val lastCommandSender: String? = null,
+    val lastCommandType: CommandType? = null,
+    val lastLocationTime: Long = 0L,
+    val lastLocationLat: Double? = null,
+    val lastLocationLng: Double? = null,
+)
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -36,12 +45,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var locateIntervalError by mutableStateOf<String?>(null); private set
 
     // Status (refreshed on resume)
-    var lastCommandTime by mutableLongStateOf(prefs.lastCommandTime); private set
-    var lastCommandSender by mutableStateOf(prefs.lastCommandSender); private set
-    var lastCommandType by mutableStateOf(prefs.lastCommandType); private set
-    var lastLocationTime by mutableLongStateOf(prefs.lastLocationTime); private set
-    var lastLocationLat by mutableStateOf(prefs.lastLocationLat); private set
-    var lastLocationLng by mutableStateOf(prefs.lastLocationLng); private set
+    var status by mutableStateOf(StatusState(
+        lastCommandTime = prefs.lastCommandTime,
+        lastCommandSender = prefs.lastCommandSender,
+        lastCommandType = prefs.lastCommandType,
+        lastLocationTime = prefs.lastLocationTime,
+        lastLocationLat = prefs.lastLocationLat,
+        lastLocationLng = prefs.lastLocationLng,
+    )); private set
 
     // UI state
     var gpsExpanded by mutableStateOf(false); private set
@@ -54,12 +65,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var hasBackgroundLocation by mutableStateOf(checkBackgroundLocationPermission()); private set
 
     fun refreshOnResume() {
-        lastCommandTime = prefs.lastCommandTime
-        lastCommandSender = prefs.lastCommandSender
-        lastCommandType = prefs.lastCommandType
-        lastLocationTime = prefs.lastLocationTime
-        lastLocationLat = prefs.lastLocationLat
-        lastLocationLng = prefs.lastLocationLng
+        status = StatusState(
+            lastCommandTime = prefs.lastCommandTime,
+            lastCommandSender = prefs.lastCommandSender,
+            lastCommandType = prefs.lastCommandType,
+            lastLocationTime = prefs.lastLocationTime,
+            lastLocationLat = prefs.lastLocationLat,
+            lastLocationLng = prefs.lastLocationLng,
+        )
         hasPermissions = checkRequiredPermissions()
         hasBackgroundLocation = checkBackgroundLocationPermission()
     }

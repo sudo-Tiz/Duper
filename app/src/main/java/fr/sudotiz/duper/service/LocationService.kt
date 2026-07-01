@@ -1,22 +1,13 @@
 package fr.sudotiz.duper.service
 
 import android.Manifest
-import android.app.KeyguardManager
-import android.app.Notification
-import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.Service
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.pm.ServiceInfo
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.IBinder
-import android.os.Looper
 import android.os.Process
 import android.os.UserHandle
 import android.provider.Settings
@@ -27,37 +18,36 @@ import fr.sudotiz.duper.DuperApplication
 import fr.sudotiz.duper.R
 import fr.sudotiz.duper.util.SmsUtil
 
-class LocationService : Service(), LocationListener {
+class LocationService : DuperForegroundService(), LocationListener {
 
     private var locationManager: LocationManager? = null
-    private var keyguardManager: KeyguardManager? = null
     private var senderPhoneNumber: String? = null
-    private val handler = Handler(Looper.getMainLooper())
     private var isTracking = false
     private var lastLocation: Location? = null
 
     private val prefs by lazy { (applicationContext as DuperApplication).preferencesRepository }
 
+    override val isActive: Boolean get() = isTracking
+    override fun onDeviceUnlocked() {
+        Log.d(TAG, "Device is unlocked, stopping tracking")
+        stopTracking()
+    }
+
+    override val notifChannelId = "duper_location"
+    override val notifChannelName = R.string.notification_channel_location_name
+    override val notifChannelDescription = R.string.notification_channel_location_description
+    override val notifChannelImportance = NotificationManager.IMPORTANCE_LOW
+    override val notifId = 2
+    override val notifTitle = R.string.notification_location_title
+    override val notifText = R.string.notification_location_text
+    override val notifIcon = android.R.drawable.ic_menu_mylocation
+    override val notifPriority = NotificationCompat.PRIORITY_LOW
+
     private val sendLocationRunnable = object : Runnable {
         override fun run() {
             if (isTracking) {
                 lastLocation?.let { sendLocationSms(it) }
-                val interval = prefs.locateInterval * 1000L
-                handler.postDelayed(this, interval)
-            }
-        }
-    }
-
-    private val unlockCheckRunnable = object : Runnable {
-        override fun run() {
-            if (isTracking) {
-                val isLocked = keyguardManager?.isKeyguardLocked ?: true
-                if (!isLocked) {
-                    Log.d(TAG, "Device is unlocked, stopping tracking")
-                    stopTracking()
-                } else {
-                    handler.postDelayed(this, UNLOCK_CHECK_INTERVAL_MS)
-                }
+                handler.postDelayed(this, prefs.locateInterval * 1000L)
             }
         }
     }
@@ -65,19 +55,13 @@ class LocationService : Service(), LocationListener {
     override fun onCreate() {
         super.onCreate()
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
-        keyguardManager = getSystemService(KEYGUARD_SERVICE) as KeyguardManager
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_START_LOCATE -> {
                 senderPhoneNumber = intent.getStringExtra(EXTRA_SENDER)
-                createNotificationChannel()
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    startForeground(NOTIFICATION_ID, createNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
-                } else {
-                    startForeground(NOTIFICATION_ID, createNotification())
-                }
+                buildAndStartForeground()
                 startTracking()
             }
             ACTION_STOP_LOCATE -> {
@@ -147,7 +131,6 @@ class LocationService : Service(), LocationListener {
                     Log.e(TAG, "Error requesting GPS updates", e)
                 }
             }
-
             if (networkEnabled) {
                 try {
                     locationManager?.requestLocationUpdates(
@@ -161,14 +144,11 @@ class LocationService : Service(), LocationListener {
             lastLocation = locationManager?.getLastKnownLocation(LocationManager.GPS_PROVIDER)
                 ?: locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
 
-            val duration = prefs.locateDuration * 1000L
-            val interval = prefs.locateInterval * 1000L
-
             handler.post(sendLocationRunnable)
-            handler.post(unlockCheckRunnable)
-            handler.postDelayed({ stopTracking() }, duration)
+            startUnlockCheck()
+            handler.postDelayed({ stopTracking() }, prefs.locateDuration * 1000L)
 
-            Log.d(TAG, "Location tracking started (interval: ${interval}ms, duration: ${duration}ms)")
+            Log.d(TAG, "Location tracking started")
         } catch (e: SecurityException) {
             Log.e(TAG, "Security exception", e)
             stopTracking()
@@ -241,76 +221,38 @@ class LocationService : Service(), LocationListener {
 
     private fun isBetterLocation(candidate: Location, current: Location?): Boolean {
         if (current == null) return true
-
         val timeDelta = candidate.time - current.time
         val isSignificantlyNewer = timeDelta > 30_000L
         val isSignificantlyOlder = timeDelta < -30_000L
         val isNewer = timeDelta > 0
-
         if (isSignificantlyNewer) return true
         if (isSignificantlyOlder) return false
-
         val accuracyDelta = candidate.accuracy - current.accuracy
-        val isMoreAccurate = accuracyDelta < 0
-        val isLessAccurate = accuracyDelta > 0
-        val isSignificantlyLessAccurate = accuracyDelta > 200
         val isSameProvider = candidate.provider == current.provider
-
         return when {
-            isMoreAccurate -> true
-            isNewer && !isLessAccurate -> true
-            isNewer && !isSignificantlyLessAccurate && isSameProvider -> true
+            accuracyDelta < 0 -> true
+            isNewer && accuracyDelta <= 0 -> true
+            isNewer && accuracyDelta <= 200 && isSameProvider -> true
             else -> false
         }
     }
 
     @Deprecated("Deprecated in Java")
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
-
-    override fun onProviderEnabled(provider: String) {
-        Log.d(TAG, "Provider enabled: $provider")
-    }
-
-    override fun onProviderDisabled(provider: String) {
-        Log.d(TAG, "Provider disabled: $provider")
-    }
+    override fun onProviderEnabled(provider: String) { Log.d(TAG, "Provider enabled: $provider") }
+    override fun onProviderDisabled(provider: String) { Log.d(TAG, "Provider disabled: $provider") }
 
     private fun stopTracking() {
         isTracking = false
         handler.removeCallbacks(sendLocationRunnable)
-        handler.removeCallbacks(unlockCheckRunnable)
-
+        stopUnlockCheck()
         try {
             locationManager?.removeUpdates(this)
         } catch (e: Exception) {
             Log.e(TAG, "Error removing location updates", e)
         }
-
         Log.d(TAG, "Location tracking stopped")
         stopSelf()
-    }
-
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                getString(R.string.notification_channel_location_name),
-                NotificationManager.IMPORTANCE_LOW
-            ).apply {
-                description = getString(R.string.notification_channel_location_description)
-            }
-            getSystemService(NotificationManager::class.java)
-                .createNotificationChannel(channel)
-        }
-    }
-
-    private fun createNotification(): Notification {
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle(getString(R.string.notification_location_title))
-            .setContentText(getString(R.string.notification_location_text))
-            .setSmallIcon(android.R.drawable.ic_menu_mylocation)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-            .build()
     }
 
     override fun onDestroy() {
@@ -318,14 +260,9 @@ class LocationService : Service(), LocationListener {
         stopTracking()
     }
 
-    override fun onBind(intent: Intent?): IBinder? = null
-
     companion object {
         private const val TAG = "LocationService"
-        private const val CHANNEL_ID = "duper_location"
-        private const val NOTIFICATION_ID = 2
         private const val GPS_UPDATE_INTERVAL_MS = 5000L
-        private const val UNLOCK_CHECK_INTERVAL_MS = 1000L
 
         const val ACTION_START_LOCATE = "fr.sudotiz.duper.START_LOCATE"
         const val ACTION_STOP_LOCATE = "fr.sudotiz.duper.STOP_LOCATE"
