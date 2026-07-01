@@ -21,8 +21,8 @@ fun StatusCard(
     lastCommandType: String?,
     lastCommandSender: String?,
     lastLocationTime: Long,
-    lastLocationLat: String?,
-    lastLocationLng: String?,
+    lastLocationLat: Double?,
+    lastLocationLng: Double?,
     formatTimestamp: (Long) -> String,
 ) {
     Card(

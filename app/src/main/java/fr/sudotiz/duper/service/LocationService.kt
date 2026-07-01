@@ -8,6 +8,7 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ServiceInfo
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -72,7 +73,11 @@ class LocationService : Service(), LocationListener {
             ACTION_START_LOCATE -> {
                 senderPhoneNumber = intent.getStringExtra(EXTRA_SENDER)
                 createNotificationChannel()
-                startForeground(NOTIFICATION_ID, createNotification())
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    startForeground(NOTIFICATION_ID, createNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+                } else {
+                    startForeground(NOTIFICATION_ID, createNotification())
+                }
                 startTracking()
             }
             ACTION_STOP_LOCATE -> {
@@ -80,7 +85,7 @@ class LocationService : Service(), LocationListener {
                 stopTracking()
             }
         }
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     private fun startTracking() {
@@ -97,15 +102,26 @@ class LocationService : Service(), LocationListener {
             return
         }
 
-        var gpsEnabled = locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) ?: false
-        var networkEnabled = locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ?: false
+        val gpsEnabled = locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) ?: false
+        val networkEnabled = locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ?: false
 
         if (!gpsEnabled && !networkEnabled) {
             Log.d(TAG, "Location is off, attempting to enable it")
-            tryEnableLocation()
-            gpsEnabled = locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) ?: false
-            networkEnabled = locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ?: false
+            SmsUtil.send(this, senderPhoneNumber, getString(R.string.sms_location_enabling))
+            Thread {
+                tryEnableLocation()
+                handler.post { registerUpdatesOrFail() }
+            }.start()
+        } else {
+            registerUpdatesOrFail()
         }
+    }
+
+    private fun registerUpdatesOrFail() {
+        if (!isTracking) return
+
+        val gpsEnabled = locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) ?: false
+        val networkEnabled = locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ?: false
 
         if (!gpsEnabled && !networkEnabled) {
             Log.e(TAG, "Location services are disabled and could not be enabled")

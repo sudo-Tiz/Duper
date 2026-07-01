@@ -57,13 +57,19 @@ class PreferencesRepository(context: Context) {
         get() = prefs.getLong(PreferenceKeys.LAST_LOCATION_TIME, 0L)
         set(value) = prefs.edit { putLong(PreferenceKeys.LAST_LOCATION_TIME, value) }
 
-    var lastLocationLat: String?
-        get() = prefs.getString(PreferenceKeys.LAST_LOCATION_LAT, null)
-        set(value) = prefs.edit { putString(PreferenceKeys.LAST_LOCATION_LAT, value) }
+    var lastLocationLat: Double?
+        get() = prefs.getString(PreferenceKeys.LAST_LOCATION_LAT, null)?.toDoubleOrNull()
+        set(value) = prefs.edit {
+            if (value != null) putString(PreferenceKeys.LAST_LOCATION_LAT, value.toString())
+            else remove(PreferenceKeys.LAST_LOCATION_LAT)
+        }
 
-    var lastLocationLng: String?
-        get() = prefs.getString(PreferenceKeys.LAST_LOCATION_LNG, null)
-        set(value) = prefs.edit { putString(PreferenceKeys.LAST_LOCATION_LNG, value) }
+    var lastLocationLng: Double?
+        get() = prefs.getString(PreferenceKeys.LAST_LOCATION_LNG, null)?.toDoubleOrNull()
+        set(value) = prefs.edit {
+            if (value != null) putString(PreferenceKeys.LAST_LOCATION_LNG, value.toString())
+            else remove(PreferenceKeys.LAST_LOCATION_LNG)
+        }
 
     fun recordCommand(type: String, sender: String) {
         prefs.edit {
