@@ -1,3 +1,76 @@
 <resources>
-    <string name="app_name">Duper</string>
+    <string name="app_name" translatable="false">Duper</string>
+
+    <!-- Permissions -->
+    <string name="permissions_title">Permissions Required</string>
+    <string name="permissions_body">The app needs permissions to function.</string>
+    <string name="permissions_button">Grant Permissions</string>
+    <string name="bg_location_title">⚠️ Background Location Required</string>
+    <string name="bg_location_body">Locate mode needs Background Location to work when the app is closed. Without it, locate commands will fail.</string>
+    <string name="bg_location_button">Grant Background Location</string>
+
+    <!-- Status card -->
+    <string name="status_title">📡 Status</string>
+    <string name="status_last_command_never">Last command received: Never</string>
+    <string name="status_last_command">Last command received: %1$s from %2$s\n%3$s</string>
+    <string name="status_last_position_never">Last position sent: Never</string>
+    <string name="status_last_position">Last position sent: %1$s, %2$s\n%3$s</string>
+    <string name="unknown">unknown</string>
+
+    <!-- Command prefix card -->
+    <string name="prefix_title">Command Prefix</string>
+    <string name="prefix_label">Prefix (e.g., \'duper\')</string>
+    <string name="prefix_code_label">Password (optional)</string>
+    <string name="prefix_code_placeholder">e.g., abc123</string>
+    <string name="prefix_commands_hint">Commands: \"%1$s ring%2$s\" · \"%1$s locate%2$s\"</string>
+
+    <!-- Ring mode card -->
+    <string name="ring_title">Ring Mode</string>
+    <string name="ring_enable_label">Enable Ring Mode</string>
+    <string name="ring_duration_label">Ring Duration (seconds)</string>
+    <string name="ring_current_ringtone">Current ringtone: %1$s</string>
+    <string name="ring_choose_ringtone">Choose Ringtone</string>
+    <string name="ring_picker_title">Choose Ringtone</string>
+    <string name="ring_default_ringtone">Default alarm</string>
+    <string name="ring_custom_ringtone">Custom ringtone</string>
+
+    <!-- Locate mode card -->
+    <string name="locate_title">Locate Mode</string>
+    <string name="locate_enable_label">Enable Locate Mode</string>
+    <string name="locate_duration_label">Total Duration (seconds)</string>
+    <string name="locate_duration_hint">How long to track location</string>
+    <string name="locate_interval_label">Send Interval (seconds)</string>
+    <string name="locate_interval_hint">How often to send location</string>
+
+    <!-- GPS card -->
+    <string name="gps_title_granted">✅ Auto-enable GPS</string>
+    <string name="gps_title_not_granted">Auto-enable GPS (Advanced)</string>
+    <string name="gps_body_granted">The app can turn on location automatically when a \'locate\' command is received.</string>
+    <string name="gps_body_not_granted">By default, Android does not let apps turn on location. To allow Duper to enable it automatically, grant a special permission once via ADB:\n\n1. On a computer, install Android Platform Tools (ADB).\n2. Enable USB debugging on this phone (Settings > Developer options).\n3. Connect the phone via USB.\n4. Run this command:</string>
+    <string name="gps_adb_command">adb shell pm grant fr.sudotiz.duper android.permission.WRITE_SECURE_SETTINGS</string>
+    <string name="gps_footer_not_granted">This only needs to be done once. The permission persists after reboots. Without it, Duper will reply by SMS that location is off instead of enabling it.</string>
+
+    <!-- Validation errors -->
+    <string name="error_prefix_empty">Prefix cannot be empty</string>
+    <string name="error_prefix_empty_commands">Prefix cannot be empty — commands would break</string>
+    <string name="error_min_one_second">Must be at least 1 second</string>
+    <string name="error_interval_less_than_duration">Interval must be less than duration (%1$ds)</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_alert_name">Duper Alerts</string>
+    <string name="notification_channel_alert_description">Notifications for Duper SMS alerts</string>
+    <string name="notification_alert_title">Duper Ring</string>
+    <string name="notification_alert_text">Alert active…</string>
+    <string name="notification_channel_location_name">Duper Location</string>
+    <string name="notification_channel_location_description">Location tracking notifications</string>
+    <string name="notification_location_title">Duper Locate</string>
+    <string name="notification_location_text">Tracking location…</string>
+
+    <!-- SMS messages -->
+    <string name="sms_ring_activated">Duper: Ring activated, phone is ringing now</string>
+    <string name="sms_locate_received">Duper: Locate command received, working on it</string>
+    <string name="sms_location_permission_denied">Duper: Location permission not granted, cannot locate</string>
+    <string name="sms_location_disabled">Duper: Location is OFF and I cannot turn it on. Grant WRITE_SECURE_SETTINGS via ADB to allow auto-enable.</string>
+    <string name="sms_location_enabling">Duper: Location is OFF, attempting to enable it…</string>
+    <string name="sms_location_started">Duper: Location ON (%1$s), sending coordinates…</string>
 </resources>

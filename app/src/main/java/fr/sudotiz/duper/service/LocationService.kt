@@ -1,4 +1,4 @@
-package com.example.duper
+package fr.sudotiz.duper.service
 
 import android.Manifest
 import android.app.KeyguardManager
@@ -8,6 +8,7 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ServiceInfo
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -22,7 +23,9 @@ import android.provider.Settings
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import androidx.core.content.edit
+import fr.sudotiz.duper.DuperApplication
+import fr.sudotiz.duper.R
+import fr.sudotiz.duper.util.SmsUtil
 
 class LocationService : Service(), LocationListener {
 
@@ -33,15 +36,13 @@ class LocationService : Service(), LocationListener {
     private var isTracking = false
     private var lastLocation: Location? = null
 
+    private val prefs by lazy { (applicationContext as DuperApplication).preferencesRepository }
+
     private val sendLocationRunnable = object : Runnable {
         override fun run() {
             if (isTracking) {
-                lastLocation?.let { location ->
-                    sendLocationSms(location)
-                }
-
-                val prefs = getSharedPreferences("duper_prefs", MODE_PRIVATE)
-                val interval = prefs.getInt("locate_interval", 30) * 1000L
+                lastLocation?.let { sendLocationSms(it) }
+                val interval = prefs.locateInterval * 1000L
                 handler.postDelayed(this, interval)
             }
         }
@@ -52,10 +53,10 @@ class LocationService : Service(), LocationListener {
             if (isTracking) {
                 val isLocked = keyguardManager?.isKeyguardLocked ?: true
                 if (!isLocked) {
-                    Log.d("LocationService", "Device is unlocked, stopping tracking")
+                    Log.d(TAG, "Device is unlocked, stopping tracking")
                     stopTracking()
                 } else {
-                    handler.postDelayed(this, 1000)
+                    handler.postDelayed(this, UNLOCK_CHECK_INTERVAL_MS)
                 }
             }
         }
@@ -69,23 +70,22 @@ class LocationService : Service(), LocationListener {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
-            "START_LOCATE" -> {
-                senderPhoneNumber = intent.getStringExtra("sender")
-
+            ACTION_START_LOCATE -> {
+                senderPhoneNumber = intent.getStringExtra(EXTRA_SENDER)
                 createNotificationChannel()
-                val notification = createNotification()
-                startForeground(2, notification)
-
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    startForeground(NOTIFICATION_ID, createNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+                } else {
+                    startForeground(NOTIFICATION_ID, createNotification())
+                }
                 startTracking()
             }
-
-            "STOP_LOCATE" -> {
-                Log.d("LocationService", "Stop command received")
+            ACTION_STOP_LOCATE -> {
+                Log.d(TAG, "Stop command received")
                 stopTracking()
             }
         }
-
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     private fun startTracking() {
@@ -93,38 +93,39 @@ class LocationService : Service(), LocationListener {
         isTracking = true
 
         if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
+                this, Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            Log.e("LocationService", "Location permission not granted")
-            SmsUtil.send(
-                this,
-                senderPhoneNumber,
-                "Duper: Location permission not granted, cannot locate"
-            )
+            Log.e(TAG, "Location permission not granted")
+            SmsUtil.send(this, senderPhoneNumber, getString(R.string.sms_location_permission_denied))
             stopTracking()
             return
         }
 
-        var gpsEnabled = locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) ?: false
-        var networkEnabled =
-            locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ?: false
+        val gpsEnabled = locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) ?: false
+        val networkEnabled = locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ?: false
 
         if (!gpsEnabled && !networkEnabled) {
-            Log.d("LocationService", "Location is off, attempting to enable it")
-            tryEnableLocation()
-            gpsEnabled = locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) ?: false
-            networkEnabled =
-                locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ?: false
+            Log.d(TAG, "Location is off, attempting to enable it")
+            SmsUtil.send(this, senderPhoneNumber, getString(R.string.sms_location_enabling))
+            Thread {
+                tryEnableLocation()
+                handler.post { registerUpdatesOrFail() }
+            }.start()
+        } else {
+            registerUpdatesOrFail()
         }
+    }
+
+    private fun registerUpdatesOrFail() {
+        if (!isTracking) return
+
+        val gpsEnabled = locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) ?: false
+        val networkEnabled = locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ?: false
 
         if (!gpsEnabled && !networkEnabled) {
-            Log.e("LocationService", "Location services are disabled and could not be enabled")
-            SmsUtil.send(
-                this, senderPhoneNumber,
-                "Duper: Location is OFF and I cannot turn it on. Grant WRITE_SECURE_SETTINGS via ADB to allow auto-enable."
-            )
+            Log.e(TAG, "Location services are disabled and could not be enabled")
+            SmsUtil.send(this, senderPhoneNumber, getString(R.string.sms_location_disabled))
             stopTracking()
             return
         }
@@ -134,59 +135,48 @@ class LocationService : Service(), LocationListener {
             if (gpsEnabled && networkEnabled) append("+")
             if (networkEnabled) append("network")
         }
-        SmsUtil.send(
-            this,
-            senderPhoneNumber,
-            "Duper: Location ON ($providers), sending coordinates..."
-        )
+        SmsUtil.send(this, senderPhoneNumber, getString(R.string.sms_location_started, providers))
 
         try {
             if (gpsEnabled) {
                 try {
                     locationManager?.requestLocationUpdates(
-                        LocationManager.GPS_PROVIDER, 5000L, 0f, this
+                        LocationManager.GPS_PROVIDER, GPS_UPDATE_INTERVAL_MS, 0f, this
                     )
                 } catch (e: Exception) {
-                    Log.e("LocationService", "Error requesting GPS updates", e)
+                    Log.e(TAG, "Error requesting GPS updates", e)
                 }
             }
 
             if (networkEnabled) {
                 try {
                     locationManager?.requestLocationUpdates(
-                        LocationManager.NETWORK_PROVIDER, 5000L, 0f, this
+                        LocationManager.NETWORK_PROVIDER, GPS_UPDATE_INTERVAL_MS, 0f, this
                     )
                 } catch (e: Exception) {
-                    Log.e("LocationService", "Error requesting network updates", e)
+                    Log.e(TAG, "Error requesting network updates", e)
                 }
             }
 
             lastLocation = locationManager?.getLastKnownLocation(LocationManager.GPS_PROVIDER)
                 ?: locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
 
-            val prefs = getSharedPreferences("duper_prefs", MODE_PRIVATE)
-            val duration = prefs.getInt("locate_duration", 300) * 1000L
-            val interval = prefs.getInt("locate_interval", 30) * 1000L
+            val duration = prefs.locateDuration * 1000L
+            val interval = prefs.locateInterval * 1000L
 
             handler.post(sendLocationRunnable)
             handler.post(unlockCheckRunnable)
+            handler.postDelayed({ stopTracking() }, duration)
 
-            handler.postDelayed({
-                stopTracking()
-            }, duration)
-
-            Log.d(
-                "LocationService",
-                "Location tracking started (interval: ${interval}ms, duration: ${duration}ms)"
-            )
+            Log.d(TAG, "Location tracking started (interval: ${interval}ms, duration: ${duration}ms)")
         } catch (e: SecurityException) {
-            Log.e("LocationService", "Security exception", e)
+            Log.e(TAG, "Security exception", e)
             stopTracking()
         }
     }
 
     private fun tryEnableLocation(): Boolean {
-        // Strategy 1: LocationManager.setLocationEnabledForUser (works on API 28+ with WRITE_SECURE_SETTINGS)
+        // Strategy 1: LocationManager.setLocationEnabledForUser (API 28+ with WRITE_SECURE_SETTINGS)
         try {
             val method = LocationManager::class.java.getMethod(
                 "setLocationEnabledForUser",
@@ -196,14 +186,14 @@ class LocationService : Service(), LocationListener {
             method.invoke(locationManager, true, Process.myUserHandle())
             Thread.sleep(800)
             if (isAnyProviderEnabled()) {
-                Log.d("LocationService", "Location enabled via setLocationEnabledForUser")
+                Log.d(TAG, "Location enabled via setLocationEnabledForUser")
                 return true
             }
         } catch (e: Exception) {
-            Log.w("LocationService", "setLocationEnabledForUser failed: ${e.message}")
+            Log.w(TAG, "setLocationEnabledForUser failed: ${e.message}")
         }
 
-        // Strategy 2: Write LOCATION_MODE secure setting (works on older versions)
+        // Strategy 2: Write LOCATION_MODE secure setting (older versions)
         try {
             @Suppress("DEPRECATION")
             Settings.Secure.putInt(
@@ -213,13 +203,13 @@ class LocationService : Service(), LocationListener {
             )
             Thread.sleep(800)
             if (isAnyProviderEnabled()) {
-                Log.d("LocationService", "Location enabled via LOCATION_MODE setting")
+                Log.d(TAG, "Location enabled via LOCATION_MODE setting")
                 return true
             }
         } catch (e: SecurityException) {
-            Log.e("LocationService", "WRITE_SECURE_SETTINGS not granted", e)
+            Log.e(TAG, "WRITE_SECURE_SETTINGS not granted", e)
         } catch (e: Exception) {
-            Log.e("LocationService", "Failed to write LOCATION_MODE", e)
+            Log.e(TAG, "Failed to write LOCATION_MODE", e)
         }
 
         return isAnyProviderEnabled()
@@ -239,17 +229,11 @@ class LocationService : Service(), LocationListener {
             senderPhoneNumber,
             "${location.latitude}, ${location.longitude} ($provider$accuracy)"
         )
-
-        val prefs = getSharedPreferences("duper_prefs", MODE_PRIVATE)
-        prefs.edit {
-            putLong("last_location_time", System.currentTimeMillis())
-            putString("last_location_lat", location.latitude.toString())
-            putString("last_location_lng", location.longitude.toString())
-        }
+        prefs.recordLocation(location.latitude, location.longitude)
     }
 
     override fun onLocationChanged(location: Location) {
-        Log.d("LocationService", "Location update received (${location.provider})")
+        Log.d(TAG, "Location update received (${location.provider})")
         if (isBetterLocation(location, lastLocation)) {
             lastLocation = location
         }
@@ -281,15 +265,14 @@ class LocationService : Service(), LocationListener {
     }
 
     @Deprecated("Deprecated in Java")
-    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-    }
+    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
 
     override fun onProviderEnabled(provider: String) {
-        Log.d("LocationService", "Provider enabled: $provider")
+        Log.d(TAG, "Provider enabled: $provider")
     }
 
     override fun onProviderDisabled(provider: String) {
-        Log.d("LocationService", "Provider disabled: $provider")
+        Log.d(TAG, "Provider disabled: $provider")
     }
 
     private fun stopTracking() {
@@ -300,10 +283,10 @@ class LocationService : Service(), LocationListener {
         try {
             locationManager?.removeUpdates(this)
         } catch (e: Exception) {
-            Log.e("LocationService", "Error removing location updates", e)
+            Log.e(TAG, "Error removing location updates", e)
         }
 
-        Log.d("LocationService", "Location tracking stopped")
+        Log.d(TAG, "Location tracking stopped")
         stopSelf()
     }
 
@@ -311,21 +294,20 @@ class LocationService : Service(), LocationListener {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Duper Location",
+                getString(R.string.notification_channel_location_name),
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = "Location tracking notifications"
+                description = getString(R.string.notification_channel_location_description)
             }
-
-            val notificationManager = getSystemService(NotificationManager::class.java)
-            notificationManager.createNotificationChannel(channel)
+            getSystemService(NotificationManager::class.java)
+                .createNotificationChannel(channel)
         }
     }
 
     private fun createNotification(): Notification {
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Duper Locate")
-            .setContentText("Tracking location...")
+            .setContentTitle(getString(R.string.notification_location_title))
+            .setContentText(getString(R.string.notification_location_text))
             .setSmallIcon(android.R.drawable.ic_menu_mylocation)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
@@ -339,6 +321,14 @@ class LocationService : Service(), LocationListener {
     override fun onBind(intent: Intent?): IBinder? = null
 
     companion object {
+        private const val TAG = "LocationService"
         private const val CHANNEL_ID = "duper_location"
+        private const val NOTIFICATION_ID = 2
+        private const val GPS_UPDATE_INTERVAL_MS = 5000L
+        private const val UNLOCK_CHECK_INTERVAL_MS = 1000L
+
+        const val ACTION_START_LOCATE = "fr.sudotiz.duper.START_LOCATE"
+        const val ACTION_STOP_LOCATE = "fr.sudotiz.duper.STOP_LOCATE"
+        const val EXTRA_SENDER = "sender"
     }
 }

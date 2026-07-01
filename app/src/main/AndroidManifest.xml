@@ -23,7 +23,6 @@
         android:name="android.permission.FOREGROUND_SERVICE"
         tools:ignore="ForegroundServicesPolicy" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -47,6 +46,7 @@
         android:required="false" />
 
     <application
+        android:name=".DuperApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -66,7 +66,7 @@
 
         <!-- SMS Receiver -->
         <receiver
-            android:name=".SmsReceiver"
+            android:name=".receiver.SmsReceiver"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BROADCAST_SMS">
@@ -77,7 +77,7 @@
 
         <!-- Unlock Receiver -->
         <receiver
-            android:name=".UnlockReceiver"
+            android:name=".receiver.UnlockReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
@@ -87,7 +87,7 @@
 
         <!-- Alert Service -->
         <service
-            android:name=".AlertService"
+            android:name=".service.AlertService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="specialUse">
@@ -98,10 +98,10 @@
 
         <!-- Location Service -->
         <service
-            android:name=".LocationService"
+            android:name=".service.LocationService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="location">
+            android:foregroundServiceType="specialUse">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="Location tracking for emergency purposes triggered by SMS" />
