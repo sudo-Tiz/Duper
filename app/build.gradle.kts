@@ -10,8 +10,8 @@ android {
         applicationId = "fr.sudotiz.duper"
         minSdk = 24
         targetSdk = 37
-        versionCode = 1001004
-        versionName = "1.1.4"
+        versionCode = 1001005
+        versionName = "1.1.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -42,6 +42,12 @@ android {
     buildFeatures {
         compose = true
     }
+    dependenciesInfo {
+        // Disables dependency metadata when building APKs (for IzzyOnDroid/F-Droid)
+        includeInApk = false
+        // Disables dependency metadata when building Android App Bundles (for Google Play)
+        includeInBundle = false
+}
 }
 
 dependencies {
