@@ -1,19 +1,23 @@
-Duper lets you remotely control your Android phone using simple SMS commands — no internet connection, no account, no server.
+Duper lets you remotely control your Android phone using SMS commands. It has no account, server, tracking SDK, or internet permission.
 
 Send "duper ring" to make your phone ring at maximum volume with the flashlight blinking, even in silent mode. Useful when you've lost your phone nearby.
 
-Send "duper locate" to receive your GPS coordinates by SMS at regular intervals. Useful in an emergency or when you lend your phone to someone.
+Send "duper locate" to receive GPS coordinates by SMS at regular intervals. Useful in an emergency or when you lend your phone to someone.
 
 Features:
 • Ring with flash, bypasses silent mode
 • GPS location tracking via SMS
 • Both modes stop when the phone is unlocked
-• Configurable prefix, password, duration, and interval
+• Configurable command prefix, optional password, duration, and interval
 • Custom ringtone support
 • Works entirely offline over SMS
 • No account, no cloud, no tracking
 
-The prefix and optional password are configurable so only people who know them can trigger commands.
+The Camera permission is used only to control the device torch during a ring alert. Duper does not capture photos or video.
+
+Location uses location permissions, including background location when the app is closed. The optional ADB-only WRITE_SECURE_SETTINGS permission lets Duper attempt to enable Android location services when they are off; it is not needed when location services are already enabled.
+
+The current release has configurable command prefix and optional password settings. Review the command configuration carefully before granting SMS and location permissions.
 
 Note: On Android 13+, you may need to allow restricted settings once in the app settings before granting permissions.
 
