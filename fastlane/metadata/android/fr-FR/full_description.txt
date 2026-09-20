@@ -19,6 +19,8 @@ La localisation utilise les permissions de localisation, y compris en arrière-p
 
 Les modes Sonnerie et Localisation sont désactivés par défaut. La Sonnerie peut utiliser un mot de passe facultatif ; la Localisation nécessite son propre secret. L'application demande seulement les permissions nécessaires lors de l'activation de chaque mode.
 
+Pour préserver la confidentialité, les commandes distantes fonctionnent seulement lorsque le téléphone est verrouillé et s'arrêtent lors de son déverrouillage.
+
 Remarque : sur Android 13+, il peut être nécessaire d'autoriser les paramètres restreints dans les réglages de l'application avant d'accorder les permissions.
 
 Open source sous GPL-3.0.

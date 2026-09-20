@@ -71,6 +71,7 @@
     <string name="command_refused_disabled">From %1$s: mode disabled</string>
     <string name="command_refused_password">From %1$s: incorrect password</string>
     <string name="command_refused_secret">From %1$s: incorrect secret</string>
+    <string name="command_refused_unlocked">From %1$s: device is unlocked</string>
 
     <!-- SMS messages -->
     <string name="sms_ring_activated">Duper: Ring activated, phone is ringing now</string>

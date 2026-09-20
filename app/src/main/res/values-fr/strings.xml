@@ -69,6 +69,7 @@
     <string name="command_refused_disabled">De %1$s : mode désactivé</string>
     <string name="command_refused_password">De %1$s : mot de passe incorrect</string>
     <string name="command_refused_secret">De %1$s : secret incorrect</string>
+    <string name="command_refused_unlocked">De %1$s : appareil déverrouillé</string>
 
     <!-- SMS messages -->
     <string name="sms_ring_activated">Duper : Sonnerie activée, le téléphone sonne maintenant</string>

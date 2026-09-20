@@ -19,6 +19,8 @@ Location uses location permissions, including background location when the app i
 
 Ring and Locate are disabled by default. Ring can use an optional password; Locate requires its own secret. The app requests only the permissions needed when you enable each mode.
 
+For privacy, remote commands run only while the phone is locked and stop when it is unlocked.
+
 Note: On Android 13+, you may need to allow restricted settings once in the app settings before granting permissions.
 
 Open source under GPL-3.0.

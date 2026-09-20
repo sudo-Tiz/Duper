@@ -1,6 +1,5 @@
 package fr.sudotiz.duper.service
 
-import android.app.KeyguardManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
@@ -15,11 +14,6 @@ import androidx.core.app.NotificationCompat
 abstract class DuperForegroundService : Service() {
 
     protected val handler = Handler(Looper.getMainLooper())
-    protected var keyguardManager: KeyguardManager? = null
-
-    protected abstract val isActive: Boolean
-    protected abstract fun onDeviceUnlocked()
-
     protected abstract val notifChannelId: String
     protected abstract val notifChannelName: Int
     protected abstract val notifChannelDescription: Int
@@ -29,23 +23,6 @@ abstract class DuperForegroundService : Service() {
     protected abstract val notifText: Int
     protected abstract val notifIcon: Int
     protected abstract val notifPriority: Int
-
-    private val unlockCheckRunnable = object : Runnable {
-        override fun run() {
-            if (isActive) {
-                if (keyguardManager?.isKeyguardLocked == false) {
-                    onDeviceUnlocked()
-                } else {
-                    handler.postDelayed(this, UNLOCK_CHECK_INTERVAL_MS)
-                }
-            }
-        }
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-        keyguardManager = getSystemService(KEYGUARD_SERVICE) as KeyguardManager
-    }
 
     protected fun buildAndStartForeground() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -67,12 +44,5 @@ abstract class DuperForegroundService : Service() {
         }
     }
 
-    protected fun startUnlockCheck() = handler.post(unlockCheckRunnable)
-    protected fun stopUnlockCheck() = handler.removeCallbacks(unlockCheckRunnable)
-
     override fun onBind(intent: Intent?): IBinder? = null
-
-    companion object {
-        const val UNLOCK_CHECK_INTERVAL_MS = 1000L
-    }
 }

@@ -3,6 +3,7 @@ package fr.sudotiz.duper.receiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.app.KeyguardManager
 import android.os.Build
 import android.provider.Telephony
 import android.util.Log
@@ -26,12 +27,16 @@ class SmsReceiver : BroadcastReceiver() {
         for (smsMessage in messages) {
             val messageBody = smsMessage.messageBody.trim()
             val sender = smsMessage.originatingAddress ?: continue
+            val deviceLocked = (context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager)
+                .isKeyguardLocked
 
             when (val command = resolveCommand(messageBody, prefix, prefs.ringPassword, prefs.locateSecret)) {
                 is Command.Ring -> if (!prefs.ringEnabled) {
                     notify(context, sender, R.string.command_ring, R.string.command_refused_disabled)
                 } else if (!command.passwordValid) {
                     notify(context, sender, R.string.command_ring, R.string.command_refused_password)
+                } else if (!deviceLocked) {
+                    notify(context, sender, R.string.command_ring, R.string.command_refused_unlocked)
                 } else {
                     Log.d(TAG, "Ring command detected! Starting alert...")
                     val replied = SmsUtil.send(context, sender, context.getString(R.string.sms_ring_activated))
@@ -51,6 +56,8 @@ class SmsReceiver : BroadcastReceiver() {
                     notify(context, sender, R.string.command_locate, R.string.command_refused_disabled)
                 } else if (!command.secretValid) {
                     notify(context, sender, R.string.command_locate, R.string.command_refused_secret)
+                } else if (!deviceLocked) {
+                    notify(context, sender, R.string.command_locate, R.string.command_refused_unlocked)
                 } else {
                     Log.d(TAG, "Locate command detected! Starting location tracking...")
                     val replied = SmsUtil.send(context, sender, context.getString(R.string.sms_locate_received))

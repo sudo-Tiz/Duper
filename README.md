@@ -34,6 +34,7 @@ Android app to find your phone remotely via SMS commands.
 | `<prefix> locate <locate-secret>` | Sends GPS coordinates via SMS when Locate Mode is enabled |
 
 Ring and Locate are disabled by default. Ring can use an optional password. Locate requires its own non-empty secret.
+For privacy, remote commands only run while the phone is locked. A command received while it is unlocked is refused without an SMS reply.
 
 ## Permissions
 
@@ -73,7 +74,8 @@ Requires USB debugging enabled. One-time setup.
 - Ring Mode and Locate Mode are disabled by default.
 - `<prefix>` and `<prefix> ring` are equivalent Ring commands; Ring can use an optional password.
 - Locate requires `<prefix> locate <locate-secret>` and a non-empty secret to enable the mode.
-- Invalid SMS are ignored. Recognized commands for disabled modes or with an incorrect password/secret receive a local notification only; no SMS reply, history entry, or action is produced.
+- Remote commands run only while the device is locked and stop when it is unlocked.
+- Invalid SMS are ignored. Recognized commands for disabled modes, an incorrect password/secret, or an unlocked device receive a local notification only; no SMS reply, history entry, or action is produced.
 - Existing command configurations are safely disabled during migration.
 
 ### 2. Sender Blocking

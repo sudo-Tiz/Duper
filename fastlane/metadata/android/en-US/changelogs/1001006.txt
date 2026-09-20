@@ -1,1 +1,1 @@
-Secure remote commands: Ring and Locate are disabled by default, Ring supports an optional password, and Locate requires its own secret. Permissions are requested only when enabling each mode. Duper now notifies you when a command is accepted or refused.
+Secure remote commands: Ring and Locate are disabled by default, Ring supports an optional password, and Locate requires its own secret. Commands run only while the phone is locked. Permissions are requested only when enabling each mode. Duper now notifies you when a command is accepted or refused.

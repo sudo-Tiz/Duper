@@ -9,7 +9,8 @@ android {
     defaultConfig {
         applicationId = "fr.sudotiz.duper"
         minSdk = 24
-        targetSdk = 37
+        // targetSdk 37 prevents the locked-screen alarm from playing on GrapheneOS.
+        targetSdk = 36
         versionCode = 1001005
         versionName = "1.1.5"
 
