@@ -68,13 +68,13 @@ Requires USB debugging enabled. One-time setup.
 
 ## Roadmap
 
-### 1. Secure Remote Commands
+### 1. Secure Remote Commands (completed)
 
-- Disable Ring Mode and Locate Mode by default.
-- Keep `<prefix>` and `<prefix> ring` as equivalent ring commands.
-- Require `<prefix> locate <locate-secret>` and a non-empty secret to enable Locate Mode.
-- Silently ignore invalid, disabled, and blocked commands.
-- Safely disable insecure existing configurations during migration.
+- Ring Mode and Locate Mode are disabled by default.
+- `<prefix>` and `<prefix> ring` are equivalent Ring commands; Ring can use an optional password.
+- Locate requires `<prefix> locate <locate-secret>` and a non-empty secret to enable the mode.
+- Invalid SMS are ignored. Recognized commands for disabled modes or with an incorrect password/secret receive a local notification only; no SMS reply, history entry, or action is produced.
+- Existing command configurations are safely disabled during migration.
 
 ### 2. Sender Blocking
 
