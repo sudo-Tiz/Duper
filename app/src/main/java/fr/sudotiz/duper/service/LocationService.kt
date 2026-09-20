@@ -2,12 +2,16 @@ package fr.sudotiz.duper.service
 
 import android.Manifest
 import android.app.NotificationManager
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Build
 import android.os.Process
 import android.os.UserHandle
 import android.provider.Settings
@@ -26,12 +30,6 @@ class LocationService : DuperForegroundService(), LocationListener {
     private var lastLocation: Location? = null
 
     private val prefs by lazy { (applicationContext as DuperApplication).preferencesRepository }
-
-    override val isActive: Boolean get() = isTracking
-    override fun onDeviceUnlocked() {
-        Log.d(TAG, "Device is unlocked, stopping tracking")
-        stopTracking()
-    }
 
     override val notifChannelId = "duper_location"
     override val notifChannelName = R.string.notification_channel_location_name
@@ -52,6 +50,15 @@ class LocationService : DuperForegroundService(), LocationListener {
         }
     }
 
+    private val unlockReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == Intent.ACTION_USER_PRESENT) {
+                Log.d(TAG, "Device is unlocked, stopping tracking")
+                stopTracking()
+            }
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
@@ -62,6 +69,7 @@ class LocationService : DuperForegroundService(), LocationListener {
             ACTION_START_LOCATE -> {
                 senderPhoneNumber = intent.getStringExtra(EXTRA_SENDER)
                 buildAndStartForeground()
+                if (!isTracking) registerUnlockReceiver()
                 startTracking()
             }
             ACTION_STOP_LOCATE -> {
@@ -145,7 +153,6 @@ class LocationService : DuperForegroundService(), LocationListener {
                 ?: locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
 
             handler.post(sendLocationRunnable)
-            startUnlockCheck()
             handler.postDelayed({ stopTracking() }, prefs.locateDuration * 1000L)
 
             Log.d(TAG, "Location tracking started")
@@ -245,7 +252,7 @@ class LocationService : DuperForegroundService(), LocationListener {
     private fun stopTracking() {
         isTracking = false
         handler.removeCallbacks(sendLocationRunnable)
-        stopUnlockCheck()
+        runCatching { unregisterReceiver(unlockReceiver) }
         try {
             locationManager?.removeUpdates(this)
         } catch (e: Exception) {
@@ -256,8 +263,18 @@ class LocationService : DuperForegroundService(), LocationListener {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         stopTracking()
+        super.onDestroy()
+    }
+
+    private fun registerUnlockReceiver() {
+        val filter = IntentFilter(Intent.ACTION_USER_PRESENT)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(unlockReceiver, filter, Context.RECEIVER_EXPORTED)
+        } else {
+            @Suppress("DEPRECATION")
+            registerReceiver(unlockReceiver, filter)
+        }
     }
 
     companion object {

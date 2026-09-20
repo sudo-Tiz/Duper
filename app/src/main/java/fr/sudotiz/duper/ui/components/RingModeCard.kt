@@ -25,10 +25,12 @@ import fr.sudotiz.duper.R
 @Composable
 fun RingModeCard(
     ringEnabled: Boolean,
+    ringPassword: String,
     ringDuration: String,
     ringDurationError: String?,
     ringtoneName: String,
     onRingEnabledChange: (Boolean) -> Unit,
+    onPasswordChange: (String) -> Unit,
     onDurationChange: (String) -> Unit,
     onChooseRingtone: () -> Unit,
 ) {
@@ -45,6 +47,24 @@ fun RingModeCard(
                 Text(stringResource(R.string.ring_enable_label), style = MaterialTheme.typography.bodyLarge)
                 Switch(checked = ringEnabled, onCheckedChange = onRingEnabledChange)
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = ringPassword,
+                onValueChange = onPasswordChange,
+                label = { Text(stringResource(R.string.ring_password_label)) },
+                placeholder = { Text(stringResource(R.string.ring_password_placeholder)) },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                stringResource(R.string.ring_commands_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 

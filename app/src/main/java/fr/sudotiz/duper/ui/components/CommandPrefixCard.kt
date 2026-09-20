@@ -18,10 +18,8 @@ import fr.sudotiz.duper.R
 @Composable
 fun CommandPrefixCard(
     commandPrefix: String,
-    commandCode: String,
     prefixError: String?,
     onPrefixChange: (String) -> Unit,
-    onCodeChange: (String) -> Unit,
 ) {
     Card {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -41,25 +39,11 @@ fun CommandPrefixCard(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = commandCode,
-                onValueChange = onCodeChange,
-                label = { Text(stringResource(R.string.prefix_code_label)) },
-                placeholder = { Text(stringResource(R.string.prefix_code_placeholder)) },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
             val prefix = commandPrefix.trim()
-            val code = commandCode.trim()
-            val cmdSuffix = if (code.isBlank()) "" else " $code"
 
             if (prefixError == null) {
                 Text(
-                    stringResource(R.string.prefix_commands_hint, prefix, cmdSuffix),
+                    stringResource(R.string.prefix_commands_hint, prefix),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

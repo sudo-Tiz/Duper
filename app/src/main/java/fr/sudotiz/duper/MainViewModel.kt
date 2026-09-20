@@ -30,7 +30,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var ringEnabled by mutableStateOf(prefs.ringEnabled); private set
     var locateEnabled by mutableStateOf(prefs.locateEnabled); private set
     var commandPrefix by mutableStateOf(prefs.commandPrefix); private set
-    var commandCode by mutableStateOf(prefs.commandCode); private set
+    var ringPassword by mutableStateOf(prefs.ringPassword); private set
+    var locateSecret by mutableStateOf(prefs.locateSecret); private set
     var ringDuration by mutableStateOf(prefs.ringDuration.toString()); private set
     var locateDuration by mutableStateOf(prefs.locateDuration.toString()); private set
     var locateInterval by mutableStateOf(prefs.locateInterval.toString()); private set
@@ -43,6 +44,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var ringDurationError by mutableStateOf<String?>(null); private set
     var locateDurationError by mutableStateOf<String?>(null); private set
     var locateIntervalError by mutableStateOf<String?>(null); private set
+    var locateSecretError by mutableStateOf<String?>(null); private set
 
     // Status (refreshed on resume)
     var status by mutableStateOf(StatusState(
@@ -61,7 +63,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val hasWriteSecureSettings: Boolean = ContextCompat.checkSelfPermission(
         app, Manifest.permission.WRITE_SECURE_SETTINGS
     ) == PackageManager.PERMISSION_GRANTED
-    var hasPermissions by mutableStateOf(checkRequiredPermissions()); private set
+    var hasRingPermissions by mutableStateOf(hasPermissions(ringPermissions())); private set
+    var hasLocatePermissions by mutableStateOf(hasPermissions(locatePermissions())); private set
     var hasBackgroundLocation by mutableStateOf(checkBackgroundLocationPermission()); private set
 
     fun refreshOnResume() {
@@ -73,12 +76,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             lastLocationLat = prefs.lastLocationLat,
             lastLocationLng = prefs.lastLocationLng,
         )
-        hasPermissions = checkRequiredPermissions()
+        hasRingPermissions = hasPermissions(ringPermissions())
+        hasLocatePermissions = hasPermissions(locatePermissions())
         hasBackgroundLocation = checkBackgroundLocationPermission()
     }
 
-    fun onRingEnabledChange(value: Boolean) { ringEnabled = value; prefs.ringEnabled = value }
-    fun onLocateEnabledChange(value: Boolean) { locateEnabled = value; prefs.locateEnabled = value }
+    fun updateRingEnabled(value: Boolean) { ringEnabled = value; prefs.ringEnabled = value }
+    fun updateLocateEnabled(value: Boolean) { locateEnabled = value; prefs.locateEnabled = value }
 
     fun onPrefixChange(value: String) {
         commandPrefix = value
@@ -90,11 +94,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun onCodeChange(value: String) {
+    fun onRingPasswordChange(value: String) {
         if (!value.contains(' ')) {
-            commandCode = value
-            prefs.commandCode = value.trim()
+            ringPassword = value
+            prefs.ringPassword = value.trim()
         }
+    }
+
+    fun onLocateSecretChange(value: String) {
+        if (!value.contains(' ')) {
+            locateSecret = value
+            prefs.locateSecret = value.trim()
+            locateSecretError = if (value.isBlank()) app.getString(R.string.error_locate_secret_empty) else null
+        }
+    }
+
+    fun canEnableLocate(): Boolean {
+        locateSecretError = if (locateSecret.isBlank()) app.getString(R.string.error_locate_secret_empty) else null
+        return locateSecretError == null
     }
 
     fun onRingDurationChange(value: String) {
@@ -125,7 +142,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun toggleGpsExpanded() { gpsExpanded = !gpsExpanded }
-    fun onPermissionsResult(allGranted: Boolean) { hasPermissions = allGranted }
+    fun refreshRingPermissions() { hasRingPermissions = hasPermissions(ringPermissions()) }
+    fun refreshLocatePermissions() { hasLocatePermissions = hasPermissions(locatePermissions()) }
     fun onBackgroundLocationResult(granted: Boolean) { hasBackgroundLocation = granted }
 
     private fun persistLocateValuesIfValid(durationValue: String, intervalValue: String) {
@@ -151,8 +169,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         } else null
     }
 
-    private fun checkRequiredPermissions(): Boolean =
-        requiredPermissions().all {
+    private fun hasPermissions(permissions: List<String>): Boolean =
+        permissions.all {
             ContextCompat.checkSelfPermission(app, it) == PackageManager.PERMISSION_GRANTED
         }
 
@@ -166,16 +184,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
 
     companion object {
-        fun requiredPermissions(): List<String> = buildList {
-            add(Manifest.permission.RECEIVE_SMS)
-            add(Manifest.permission.READ_SMS)
-            add(Manifest.permission.SEND_SMS)
-            add(Manifest.permission.CAMERA)
-            add(Manifest.permission.ACCESS_FINE_LOCATION)
-            add(Manifest.permission.ACCESS_COARSE_LOCATION)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                add(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }
+        fun ringPermissions(): List<String> = listOf(
+            Manifest.permission.RECEIVE_SMS,
+            Manifest.permission.SEND_SMS,
+            Manifest.permission.CAMERA,
+        )
+
+        fun locatePermissions(): List<String> = listOf(
+            Manifest.permission.RECEIVE_SMS,
+            Manifest.permission.SEND_SMS,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+        )
     }
 }

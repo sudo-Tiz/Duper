@@ -8,7 +8,7 @@ Fonctionnalités :
 • Sonnerie avec flash, contourne le mode silencieux
 • Suivi GPS par SMS
 • Les deux modes s'arrêtent quand le téléphone est déverrouillé
-• Préfixe de commande, mot de passe facultatif, durée et intervalle configurables
+• Préfixe de commande, mot de passe Sonnerie facultatif, secret Localisation, durée et intervalle configurables
 • Sonnerie personnalisée
 • Fonctionne entièrement hors ligne via SMS
 • Aucun compte, aucun cloud, aucun tracking
@@ -17,7 +17,9 @@ La permission Appareil photo est utilisée uniquement pour contrôler la torche 
 
 La localisation utilise les permissions de localisation, y compris en arrière-plan lorsque l'application est fermée. La permission facultative WRITE_SECURE_SETTINGS, accordable uniquement via ADB, permet à Duper d'essayer d'activer les services de localisation Android lorsqu'ils sont désactivés. Elle n'est pas nécessaire si la localisation est déjà activée.
 
-La version actuelle propose un préfixe de commande et un mot de passe facultatif. Vérifiez attentivement la configuration des commandes avant d'accorder les permissions SMS et de localisation.
+Les modes Sonnerie et Localisation sont désactivés par défaut. La Sonnerie peut utiliser un mot de passe facultatif ; la Localisation nécessite son propre secret. L'application demande seulement les permissions nécessaires lors de l'activation de chaque mode.
+
+Pour préserver la confidentialité, les commandes distantes fonctionnent seulement lorsque le téléphone est verrouillé et s'arrêtent lors de son déverrouillage.
 
 Remarque : sur Android 13+, il peut être nécessaire d'autoriser les paramètres restreints dans les réglages de l'application avant d'accorder les permissions.
 
