@@ -21,25 +21,27 @@ Android app to find your phone remotely via SMS commands.
 ## Quick Start
 
 1. Download latest APK from [Releases](https://github.com/sudo-tiz/Duper/releases)
-2. Install and grant the SMS and location permissions needed for the modes you use
-3. From another phone, send: `<prefix> ring [password]` or `<prefix> locate [password]`
+2. Enable Ring or Locate in the app and grant only the requested permissions
+3. From another phone, send a configured command
 
 
 ## Commands
 
 | Command | Action |
 |---------|--------|
-| `<prefix> ring [password]` | Triggers alarm |
-| `<prefix> locate [password]` | Sends GPS coordinates via SMS |
+| `<prefix>` or `<prefix> ring` | Triggers alarm when Ring Mode is enabled and no Ring password is set |
+| `<prefix> <ring-password>` or `<prefix> ring <ring-password>` | Triggers alarm when Ring Mode is enabled and a Ring password is set |
+| `<prefix> locate <locate-secret>` | Sends GPS coordinates via SMS when Locate Mode is enabled |
 
-The current release uses the same optional password for both commands. A future release will make location commands opt-in and require a dedicated secret; see the [roadmap](#roadmap).
+Ring and Locate are disabled by default. Ring can use an optional password. Locate requires its own non-empty secret.
 
 ## Permissions
 
-- **SMS** – Receive commands and send command or location responses
-- **Location** – GPS tracking for Locate Mode
-- **Camera** – Controls the device torch during a ring alert; Duper does not capture photos or video
-- **Background Location** – Track when app is closed (optional but recommended)
+- **SMS** – Requested when enabling Ring or Locate to receive commands and send responses
+- **Camera** – Requested when enabling Ring to control the device torch; Duper does not capture photos or video
+- **Location** – Requested when enabling Locate for GPS tracking
+- **Background Location** – Requested when enabling Locate to track when the app is closed
+- **Notifications** – Optional; shows accepted or refused command attempts on the target phone
 
 ### ⚠️ Android 15+ Note 
 > Android 15+ blocks SMS permissions by default.

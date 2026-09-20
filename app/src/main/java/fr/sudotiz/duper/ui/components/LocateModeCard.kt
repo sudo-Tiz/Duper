@@ -24,11 +24,14 @@ import fr.sudotiz.duper.R
 @Composable
 fun LocateModeCard(
     locateEnabled: Boolean,
+    locateSecret: String,
+    locateSecretError: String?,
     locateDuration: String,
     locateInterval: String,
     locateDurationError: String?,
     locateIntervalError: String?,
     onLocateEnabledChange: (Boolean) -> Unit,
+    onSecretChange: (String) -> Unit,
     onDurationChange: (String) -> Unit,
     onIntervalChange: (String) -> Unit,
 ) {
@@ -45,6 +48,20 @@ fun LocateModeCard(
                 Text(stringResource(R.string.locate_enable_label), style = MaterialTheme.typography.bodyLarge)
                 Switch(checked = locateEnabled, onCheckedChange = onLocateEnabledChange)
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = locateSecret,
+                onValueChange = onSecretChange,
+                isError = locateSecretError != null,
+                label = { Text(stringResource(R.string.locate_secret_label)) },
+                placeholder = { Text(stringResource(R.string.locate_secret_placeholder)) },
+                supportingText = {
+                    Text(locateSecretError ?: stringResource(R.string.locate_secret_hint))
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 

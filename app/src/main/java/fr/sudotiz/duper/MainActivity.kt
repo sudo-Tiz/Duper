@@ -36,12 +36,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import fr.sudotiz.duper.ui.components.BackgroundLocationCard
 import fr.sudotiz.duper.ui.components.CommandPrefixCard
 import fr.sudotiz.duper.ui.components.GpsCard
 import fr.sudotiz.duper.ui.components.LocateModeCard
-import fr.sudotiz.duper.ui.components.PermissionsCard
-import fr.sudotiz.duper.ui.components.RestrictedSettingsCard
 import fr.sudotiz.duper.ui.components.RingModeCard
 import fr.sudotiz.duper.ui.components.StatusCard
 import fr.sudotiz.duper.util.getRingtoneName
@@ -74,6 +71,7 @@ fun DuperApp(viewModel: MainViewModel = viewModel()) {
                 ?: strDefaultRingtone
         )
     }
+    var pendingMode by remember { mutableStateOf<Mode?>(null) }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
@@ -84,13 +82,46 @@ fun DuperApp(viewModel: MainViewModel = viewModel()) {
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions -> viewModel.onPermissionsResult(permissions.values.all { it }) }
+    val notificationLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { }
 
     val backgroundLocationLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { granted -> viewModel.onBackgroundLocationResult(granted) }
+    ) { granted ->
+        viewModel.onBackgroundLocationResult(granted)
+        if (granted) {
+            viewModel.updateLocateEnabled(true)
+            requestNotificationPermission(notificationLauncher)
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        when (pendingMode) {
+            Mode.RING -> {
+                viewModel.refreshRingPermissions()
+                if (viewModel.hasRingPermissions) {
+                    viewModel.updateRingEnabled(true)
+                    requestNotificationPermission(notificationLauncher)
+                }
+            }
+            Mode.LOCATE -> {
+                viewModel.refreshLocatePermissions()
+                if (viewModel.hasLocatePermissions) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !viewModel.hasBackgroundLocation) {
+                        backgroundLocationLauncher.launch(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                    } else {
+                        viewModel.updateLocateEnabled(true)
+                        requestNotificationPermission(notificationLauncher)
+                    }
+                }
+            }
+            null -> Unit
+        }
+        pendingMode = null
+    }
 
     val ringtoneLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -118,43 +149,32 @@ fun DuperApp(viewModel: MainViewModel = viewModel()) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            if (!viewModel.hasPermissions) {
-                PermissionsCard(
-                    onGrantPermissions = {
-                        permissionLauncher.launch(MainViewModel.requiredPermissions().toTypedArray())
-                    }
-                )
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    RestrictedSettingsCard()
-                }
-            }
-
-            if (viewModel.hasPermissions && !viewModel.hasBackgroundLocation &&
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-            ) {
-                BackgroundLocationCard(
-                    onGrantBackgroundLocation = {
-                        backgroundLocationLauncher.launch(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                    }
-                )
-            }
-
             StatusCard(status = viewModel.status)
 
             CommandPrefixCard(
                 commandPrefix = viewModel.commandPrefix,
-                commandCode = viewModel.commandCode,
                 prefixError = viewModel.prefixError,
                 onPrefixChange = viewModel::onPrefixChange,
-                onCodeChange = viewModel::onCodeChange,
             )
 
             RingModeCard(
                 ringEnabled = viewModel.ringEnabled,
+                ringPassword = viewModel.ringPassword,
                 ringDuration = viewModel.ringDuration,
                 ringDurationError = viewModel.ringDurationError,
                 ringtoneName = ringtoneName,
-                onRingEnabledChange = viewModel::onRingEnabledChange,
+                onRingEnabledChange = { enabled ->
+                    if (!enabled) {
+                        viewModel.updateRingEnabled(false)
+                    } else if (viewModel.hasRingPermissions) {
+                        viewModel.updateRingEnabled(true)
+                        requestNotificationPermission(notificationLauncher)
+                    } else {
+                        pendingMode = Mode.RING
+                        permissionLauncher.launch(MainViewModel.ringPermissions().toTypedArray())
+                    }
+                },
+                onPasswordChange = viewModel::onRingPasswordChange,
                 onDurationChange = viewModel::onRingDurationChange,
                 onChooseRingtone = {
                     val intent = android.content.Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
@@ -172,11 +192,30 @@ fun DuperApp(viewModel: MainViewModel = viewModel()) {
 
             LocateModeCard(
                 locateEnabled = viewModel.locateEnabled,
+                locateSecret = viewModel.locateSecret,
+                locateSecretError = viewModel.locateSecretError,
                 locateDuration = viewModel.locateDuration,
                 locateInterval = viewModel.locateInterval,
                 locateDurationError = viewModel.locateDurationError,
                 locateIntervalError = viewModel.locateIntervalError,
-                onLocateEnabledChange = viewModel::onLocateEnabledChange,
+                onLocateEnabledChange = { enabled ->
+                    if (!enabled) {
+                        viewModel.updateLocateEnabled(false)
+                    } else if (viewModel.canEnableLocate()) {
+                        if (viewModel.hasLocatePermissions) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !viewModel.hasBackgroundLocation) {
+                                backgroundLocationLauncher.launch(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                            } else {
+                                viewModel.updateLocateEnabled(true)
+                                requestNotificationPermission(notificationLauncher)
+                            }
+                        } else {
+                            pendingMode = Mode.LOCATE
+                            permissionLauncher.launch(MainViewModel.locatePermissions().toTypedArray())
+                        }
+                    }
+                },
+                onSecretChange = viewModel::onLocateSecretChange,
                 onDurationChange = viewModel::onLocateDurationChange,
                 onIntervalChange = viewModel::onLocateIntervalChange,
             )
@@ -190,3 +229,10 @@ fun DuperApp(viewModel: MainViewModel = viewModel()) {
     }
 }
 
+private enum class Mode { RING, LOCATE }
+
+private fun requestNotificationPermission(launcher: androidx.activity.result.ActivityResultLauncher<String>) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        launcher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+    }
+}

@@ -14,21 +14,29 @@ class PreferencesRepository(context: Context) {
     private val prefs: SharedPreferences =
         context.getSharedPreferences(PreferenceKeys.PREFS_NAME, Context.MODE_PRIVATE)
 
+    init {
+        migrateSecureCommands()
+    }
+
     var ringEnabled: Boolean
-        get() = prefs.getBoolean(PreferenceKeys.RING_ENABLED, true)
+        get() = prefs.getBoolean(PreferenceKeys.RING_ENABLED, false)
         set(value) = prefs.edit { putBoolean(PreferenceKeys.RING_ENABLED, value) }
 
     var locateEnabled: Boolean
-        get() = prefs.getBoolean(PreferenceKeys.LOCATE_ENABLED, true)
+        get() = prefs.getBoolean(PreferenceKeys.LOCATE_ENABLED, false)
         set(value) = prefs.edit { putBoolean(PreferenceKeys.LOCATE_ENABLED, value) }
 
     var commandPrefix: String
         get() = prefs.getString(PreferenceKeys.COMMAND_PREFIX, DEFAULT_PREFIX) ?: DEFAULT_PREFIX
         set(value) = prefs.edit { putString(PreferenceKeys.COMMAND_PREFIX, value) }
 
-    var commandCode: String
-        get() = prefs.getString(PreferenceKeys.COMMAND_CODE, "") ?: ""
-        set(value) = prefs.edit { putString(PreferenceKeys.COMMAND_CODE, value) }
+    var ringPassword: String
+        get() = prefs.getString(PreferenceKeys.RING_PASSWORD, "") ?: ""
+        set(value) = prefs.edit { putString(PreferenceKeys.RING_PASSWORD, value) }
+
+    var locateSecret: String
+        get() = prefs.getString(PreferenceKeys.LOCATE_SECRET, "") ?: ""
+        set(value) = prefs.edit { putString(PreferenceKeys.LOCATE_SECRET, value) }
 
     var ringDuration: Int
         get() = prefs.getInt(PreferenceKeys.RING_DURATION, DEFAULT_RING_DURATION)
@@ -90,6 +98,16 @@ class PreferencesRepository(context: Context) {
             putLong(PreferenceKeys.LAST_LOCATION_TIME, System.currentTimeMillis())
             putString(PreferenceKeys.LAST_LOCATION_LAT, lat.toString())
             putString(PreferenceKeys.LAST_LOCATION_LNG, lng.toString())
+        }
+    }
+
+    private fun migrateSecureCommands() {
+        if (prefs.getBoolean(PreferenceKeys.SECURE_COMMANDS_MIGRATED, false)) return
+        prefs.edit {
+            putBoolean(PreferenceKeys.RING_ENABLED, false)
+            putBoolean(PreferenceKeys.LOCATE_ENABLED, false)
+            remove("command_code")
+            putBoolean(PreferenceKeys.SECURE_COMMANDS_MIGRATED, true)
         }
     }
 

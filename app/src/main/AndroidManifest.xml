@@ -7,9 +7,6 @@
         android:name="android.permission.RECEIVE_SMS"
         tools:ignore="ProtectedPermissions" />
     <uses-permission
-        android:name="android.permission.READ_SMS"
-        tools:ignore="ProtectedPermissions" />
-    <uses-permission
         android:name="android.permission.SEND_SMS"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.CAMERA" />
