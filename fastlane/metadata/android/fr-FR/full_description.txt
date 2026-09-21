@@ -17,7 +17,7 @@ La permission Appareil photo est utilisée uniquement pour contrôler la torche 
 
 La localisation utilise les permissions de localisation, y compris en arrière-plan lorsque l'application est fermée. La permission facultative WRITE_SECURE_SETTINGS, accordable uniquement via ADB, permet à Duper d'essayer d'activer les services de localisation Android lorsqu'ils sont désactivés. Elle n'est pas nécessaire si la localisation est déjà activée.
 
-Les modes Sonnerie et Localisation sont désactivés par défaut. La Sonnerie peut utiliser un mot de passe facultatif ; la Localisation nécessite son propre secret. L'application demande seulement les permissions nécessaires lors de l'activation de chaque mode.
+Les modes Sonnerie et Localisation sont désactivés par défaut. La Sonnerie peut utiliser un mot de passe et une confirmation SMS facultatifs ; la Localisation nécessite son propre secret et envoie des réponses par SMS. L'application demande seulement les permissions nécessaires lors de l'activation de chaque mode.
 
 Pour préserver la confidentialité, les commandes distantes fonctionnent seulement lorsque le téléphone est verrouillé et s'arrêtent lors de son déverrouillage.
 

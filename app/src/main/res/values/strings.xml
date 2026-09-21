@@ -12,14 +12,19 @@
     <!-- Command prefix card -->
     <string name="prefix_title">Command Prefix</string>
     <string name="prefix_label">Prefix (e.g., \'duper\')</string>
+    <string name="prefix_hint">Use one word without spaces.</string>
     <string name="prefix_commands_hint">Command prefix: \"%1$s\"</string>
 
     <!-- Ring mode card -->
     <string name="ring_title">Ring Mode</string>
-    <string name="ring_enable_label">Enable Ring Mode</string>
     <string name="ring_password_label">Ring password (optional)</string>
     <string name="ring_password_placeholder">e.g., abc123</string>
     <string name="ring_commands_hint">Commands: prefix or prefix ring. If a password is set: prefix password or prefix ring password.</string>
+    <string name="ring_reply_label">Send SMS confirmation</string>
+    <string name="ring_flash_label">Flash</string>
+    <string name="ring_vibration_label">Vibrate</string>
+    <string name="ring_audio_label">Sound</string>
+
     <string name="ring_duration_label">Ring Duration (seconds)</string>
     <string name="ring_current_ringtone">Current ringtone: %1$s</string>
     <string name="ring_choose_ringtone">Choose Ringtone</string>
@@ -29,7 +34,6 @@
 
     <!-- Locate mode card -->
     <string name="locate_title">Locate Mode</string>
-    <string name="locate_enable_label">Enable Locate Mode</string>
     <string name="locate_secret_label">Locate secret</string>
     <string name="locate_secret_placeholder">Required to enable Locate</string>
     <string name="locate_secret_hint">Command: prefix locate secret</string>
@@ -68,6 +72,7 @@
     <string name="command_locate">Locate</string>
     <string name="command_reply_sent">From %1$s: SMS reply sent</string>
     <string name="command_reply_not_sent">From %1$s: SMS reply could not be sent</string>
+    <string name="command_reply_disabled">From %1$s: Ring activated without SMS reply</string>
     <string name="command_refused_disabled">From %1$s: mode disabled</string>
     <string name="command_refused_password">From %1$s: incorrect password</string>
     <string name="command_refused_secret">From %1$s: incorrect secret</string>

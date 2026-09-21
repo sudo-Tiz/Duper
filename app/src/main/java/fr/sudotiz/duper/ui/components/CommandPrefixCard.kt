@@ -34,6 +34,8 @@ fun CommandPrefixCard(
                 supportingText = {
                     if (prefixError != null) {
                         Text(prefixError, color = MaterialTheme.colorScheme.error)
+                    } else {
+                        Text(stringResource(R.string.prefix_hint))
                     }
                 },
                 modifier = Modifier.fillMaxWidth()

@@ -42,6 +42,7 @@ class AlertService : Service() {
     private var flashOn = false
     private var isRinging = false
     private var originalAlarmVolume: Int = -1
+    private var unlockReceiverRegistered = false
 
     private val prefs by lazy { (applicationContext as DuperApplication).preferencesRepository }
 
@@ -53,6 +54,8 @@ class AlertService : Service() {
             }
         }
     }
+
+    private val stopAlertRunnable = Runnable { stopAlert() }
 
     private val unlockReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -83,10 +86,11 @@ class AlertService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_START_RING -> {
+                if (isRinging) return START_NOT_STICKY
                 startForegroundNotification()
                 val duration = prefs.ringDuration * 1000L
                 wakeLock?.acquire(duration)
-                if (!isRinging) registerUnlockReceiver()
+                registerUnlockReceiver()
                 startRing()
             }
             ACTION_STOP_RING -> {
@@ -101,10 +105,11 @@ class AlertService : Service() {
         if (isRinging) return
         isRinging = true
         val duration = prefs.ringDuration * 1000L
-        startRingtone(prefs.ringtoneUri)
-        startVibration()
-        startFlashing()
-        handler.postDelayed({ stopAlert() }, duration)
+        if (prefs.ringAudioEnabled) startRingtone(prefs.ringtoneUri)
+        if (prefs.ringVibrationEnabled) startVibration()
+        if (prefs.ringFlashEnabled) startFlashing()
+        handler.removeCallbacks(stopAlertRunnable)
+        handler.postDelayed(stopAlertRunnable, duration)
     }
 
     private fun startRingtone(customUri: String?) {
@@ -185,9 +190,13 @@ class AlertService : Service() {
 
         isFlashing = false
         handler.removeCallbacks(flashRunnable)
+        handler.removeCallbacks(stopAlertRunnable)
         vibrator?.cancel()
         vibrator = null
-        runCatching { unregisterReceiver(unlockReceiver) }
+        if (unlockReceiverRegistered) {
+            unregisterReceiver(unlockReceiver)
+            unlockReceiverRegistered = false
+        }
 
         try {
             cameraId?.let { id -> cameraManager?.setTorchMode(id, false) }
@@ -255,6 +264,7 @@ class AlertService : Service() {
             @Suppress("DEPRECATION")
             registerReceiver(unlockReceiver, filter)
         }
+        unlockReceiverRegistered = true
     }
 
     companion object {

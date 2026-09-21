@@ -10,14 +10,19 @@
     <!-- Command prefix card -->
     <string name="prefix_title">Préfixe de commande</string>
     <string name="prefix_label">Préfixe (ex. : \'duper\')</string>
+    <string name="prefix_hint">Utilisez un seul mot sans espace.</string>
     <string name="prefix_commands_hint">Préfixe de commande : \"%1$s\"</string>
 
     <!-- Ring mode card -->
     <string name="ring_title">Mode Sonnerie</string>
-    <string name="ring_enable_label">Activer le mode Sonnerie</string>
     <string name="ring_password_label">Mot de passe Sonnerie (optionnel)</string>
     <string name="ring_password_placeholder">ex. : abc123</string>
     <string name="ring_commands_hint">Commandes : préfixe ou préfixe ring. Avec mot de passe : préfixe mot-de-passe ou préfixe ring mot-de-passe.</string>
+    <string name="ring_reply_label">Envoyer une confirmation par SMS</string>
+    <string name="ring_flash_label">Flash</string>
+    <string name="ring_vibration_label">Vibrer</string>
+    <string name="ring_audio_label">Son</string>
+
     <string name="ring_duration_label">Durée de sonnerie (secondes)</string>
     <string name="ring_current_ringtone">Sonnerie actuelle : %1$s</string>
     <string name="ring_choose_ringtone">Choisir une sonnerie</string>
@@ -27,7 +32,6 @@
 
     <!-- Locate mode card -->
     <string name="locate_title">Mode Localisation</string>
-    <string name="locate_enable_label">Activer le mode Localisation</string>
     <string name="locate_secret_label">Secret de localisation</string>
     <string name="locate_secret_placeholder">Requis pour activer Localisation</string>
     <string name="locate_secret_hint">Commande : préfixe locate secret</string>
@@ -66,6 +70,7 @@
     <string name="command_locate">Localisation</string>
     <string name="command_reply_sent">De %1$s : réponse SMS envoyée</string>
     <string name="command_reply_not_sent">De %1$s : réponse SMS non envoyée</string>
+    <string name="command_reply_disabled">De %1$s : sonnerie activée sans réponse SMS</string>
     <string name="command_refused_disabled">De %1$s : mode désactivé</string>
     <string name="command_refused_password">De %1$s : mot de passe incorrect</string>
     <string name="command_refused_secret">De %1$s : secret incorrect</string>

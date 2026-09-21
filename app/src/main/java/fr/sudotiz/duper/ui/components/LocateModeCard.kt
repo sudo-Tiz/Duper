@@ -37,15 +37,12 @@ fun LocateModeCard(
 ) {
     Card {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(stringResource(R.string.locate_title), style = MaterialTheme.typography.titleLarge)
-            Spacer(modifier = Modifier.height(8.dp))
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(stringResource(R.string.locate_enable_label), style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(R.string.locate_title), style = MaterialTheme.typography.titleLarge)
                 Switch(checked = locateEnabled, onCheckedChange = onLocateEnabledChange)
             }
 
