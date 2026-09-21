@@ -18,9 +18,7 @@
     <string name="ring_password_label">Mot de passe Sonnerie (optionnel)</string>
     <string name="ring_password_placeholder">ex. : abc123</string>
     <string name="ring_commands_hint">Commandes : préfixe ou préfixe ring. Avec mot de passe : préfixe mot-de-passe ou préfixe ring mot-de-passe.</string>
-<string name="ring_reply_label">Envoyer une confirmation par SMS</string>
-    <string name="ring_reply_hint">Lorsqu\'elle est désactivée, la sonnerie démarre sans répondre à l\'expéditeur.</string>
-
+    <string name="ring_reply_label">Envoyer une confirmation par SMS</string>
     <string name="ring_flash_label">Flash</string>
     <string name="ring_vibration_label">Vibrer</string>
     <string name="ring_audio_label">Son</string>

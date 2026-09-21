@@ -1,6 +1,7 @@
 # Duper
 
 Android app to find your phone remotely via SMS commands.
+[![F-Droid](https://img.shields.io/f-droid/v/fr.sudotiz.duper?label=F-Droid)](https://f-droid.org/packages/fr.sudotiz.duper)
 
 > **Why "Duper"?** It's French *verlan* (slang made by reversing syllables) for *perdu* → **du-per**. *Perdu* means "lost" in French. You get it.
 
@@ -20,7 +21,9 @@ Android app to find your phone remotely via SMS commands.
 
 ## Quick Start
 
-1. Download latest APK from [Releases](https://github.com/sudo-tiz/Duper/releases)
+1. Download latest APK
+    - [Releases](https://github.com/sudo-tiz/Duper/releases)
+    - [F-Droid](https://f-droid.org/packages/fr.sudotiz.duper)
 2. Enable Ring or Locate in the app and grant only the requested permissions
 3. From another phone, send a configured command
 
@@ -80,7 +83,6 @@ Requires USB debugging enabled. One-time setup.
 - [x] Store metadata: update Fastlane descriptions and add initial screenshots.
 - [ ] Sender blocking: local normalized blacklist with add, edit, search, paste, and removal.
 - [ ] Optional Do Not Disturb support without making Ring depend on the access.
-- [ ] F-Droid readiness: replace screenshots with current secured-command and permission screens.
 - [ ] Import/export: UTF-8 blacklist files through the system document picker, with import preview and validation.
 
 ## License
