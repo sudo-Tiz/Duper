@@ -44,6 +44,12 @@ For privacy, remote commands only run while the phone is locked. A command recei
 - **Background Location** – Requested when enabling Locate to track when the app is closed
 - **Notifications** – Optional; shows accepted or refused command attempts on the target phone
 
+## Privacy
+
+Duper has no account, server, tracking SDK, or internet permission. Its secrets, settings, command history, and last location are stored only on the device and are excluded from Android backup and device-transfer data.
+
+Ring uses Android's alarm audio stream. Device and Do Not Disturb policies may still limit alerts; optional Do Not Disturb support is planned.
+
 ### ⚠️ Android 15+ Note 
 > Android 15+ blocks SMS permissions by default.
 
@@ -69,48 +75,14 @@ Requires USB debugging enabled. One-time setup.
 
 ## Roadmap
 
-### 1. Secure Remote Commands (completed)
-
-- Ring Mode and Locate Mode are disabled by default.
-- `<prefix>` and `<prefix> ring` are equivalent Ring commands; Ring can use an optional password.
-- Locate requires `<prefix> locate <locate-secret>` and a non-empty secret to enable the mode.
-- Remote commands run only while the device is locked and stop when it is unlocked.
-- Invalid SMS are ignored. Recognized commands for disabled modes, an incorrect password/secret, or an unlocked device receive a local notification only; no SMS reply, history entry, or action is produced.
-- Existing command configurations are safely disabled during migration.
-
-### 2. Sender Blocking
-
-- Add a local blacklist with no default entries.
-- Check it before replying, recording commands, ringing, or locating.
-- Support manual entry, paste, search, editing, and removal.
-- Normalize phone numbers and keep the list local.
-
-### 3. Privacy and Backup Protection
-
-- Correct Android backup and data-extraction rules to exclude secrets, lists, history, settings, and location data.
-- Audit and remove unnecessary permissions.
-
-### 4. CI/CD Reliability
-
-- Keep Android 7.0 (API 24) compatibility.
-- Standardize local and CI builds on JDK 17.
-- Run Android lint and validate minified release builds before publication.
-- Make versions source-controlled, Git-tag-aligned, and collision-safe.
-- Pin actions and Semantic Release tooling; use a lockfile and `npm ci`.
-- Prevent concurrent releases and explicitly provide Android SDK 37 tooling.
-- Use consistent Gradle caching in validation and release workflows.
-
-### 5. F-Droid Readiness
-
-- Add version-code-specific changelogs and current Fastlane screenshots.
-- Update store metadata after the security changes are implemented.
-
-### 6. Import and Export
-
-- Add plain-text blacklist import and export through Android's system document picker.
-- Use UTF-8, one phone number per line.
-- Preview accepted, duplicate, invalid, and normalized entries before importing.
-- Export only on user action, without cloud sync, automatic downloads, or built-in external lists.
+- [x] Secure remote commands: opt-in modes, separate Locate secret, optional Ring password, and locked-device-only execution.
+- [x] Privacy protection: disable backups and device transfers; remove unused permissions.
+- [x] Store metadata: update Fastlane descriptions and add initial screenshots.
+- [ ] Sender blocking: local normalized blacklist with add, edit, search, paste, and removal.
+- [ ] Optional Do Not Disturb support without making Ring depend on the access.
+- [ ] CI/CD reliability: JDK 17, lint and minified-release validation, reproducible versions, pinned tooling, and caching.
+- [ ] F-Droid readiness: replace screenshots with current secured-command and permission screens.
+- [ ] Import/export: UTF-8 blacklist files through the system document picker, with import preview and validation.
 
 ## License
 
