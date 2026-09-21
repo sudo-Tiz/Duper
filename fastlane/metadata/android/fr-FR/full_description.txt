@@ -1,6 +1,6 @@
-Duper vous permet de contrôler votre téléphone Android à distance par SMS. L'application n'a ni compte, ni serveur, ni SDK de suivi, ni permission Internet.
+Duper vous permet de contrôler votre téléphone Android à distance par SMS. L'application n'a ni compte, ni serveur, ni SDK de suivi, ni permission Internet. Les secrets, réglages, historique de commandes et données de localisation restent sur l'appareil et sont exclus des sauvegardes et transferts Android.
 
-Envoyez "duper ring" pour faire sonner votre téléphone au volume maximum avec le flash qui clignote, même en mode silencieux. Pratique quand vous avez perdu votre téléphone à proximité.
+Envoyez "duper ring" pour faire sonner votre téléphone avec le flash qui clignote. Pratique quand vous avez perdu votre téléphone à proximité. Les politiques de l'appareil et du mode Ne pas déranger peuvent limiter les alertes.
 
 Envoyez "duper locate" pour recevoir des coordonnées GPS par SMS à intervalles réguliers. Utile en cas d'urgence ou quand vous prêtez votre téléphone à quelqu'un.
 
@@ -13,7 +13,7 @@ Fonctionnalités :
 • Fonctionne entièrement hors ligne via SMS
 • Aucun compte, aucun cloud, aucun tracking
 
-La permission Appareil photo est utilisée uniquement pour contrôler la torche pendant une alerte. Duper ne prend ni photo ni vidéo.
+La permission Appareil photo est utilisée uniquement pour contrôler la torche pendant une alerte. Duper ne prend ni photo ni vidéo. La permission Vibreur est utilisée uniquement pour les alertes de sonnerie.
 
 La localisation utilise les permissions de localisation, y compris en arrière-plan lorsque l'application est fermée. La permission facultative WRITE_SECURE_SETTINGS, accordable uniquement via ADB, permet à Duper d'essayer d'activer les services de localisation Android lorsqu'ils sont désactivés. Elle n'est pas nécessaire si la localisation est déjà activée.
 
