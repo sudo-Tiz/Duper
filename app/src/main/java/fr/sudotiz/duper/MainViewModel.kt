@@ -31,6 +31,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     var locateEnabled by mutableStateOf(prefs.locateEnabled); private set
     var commandPrefix by mutableStateOf(prefs.commandPrefix); private set
     var ringPassword by mutableStateOf(prefs.ringPassword); private set
+    var ringReplyEnabled by mutableStateOf(prefs.ringReplyEnabled); private set
     var locateSecret by mutableStateOf(prefs.locateSecret); private set
     var ringDuration by mutableStateOf(prefs.ringDuration.toString()); private set
     var locateDuration by mutableStateOf(prefs.locateDuration.toString()); private set
@@ -99,6 +100,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             ringPassword = value
             prefs.ringPassword = value.trim()
         }
+    }
+
+    fun updateRingReplyEnabled(value: Boolean) {
+        ringReplyEnabled = value
+        prefs.ringReplyEnabled = value
     }
 
     fun onLocateSecretChange(value: String) {
@@ -186,7 +192,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
         fun ringPermissions(): List<String> = listOf(
             Manifest.permission.RECEIVE_SMS,
-            Manifest.permission.SEND_SMS,
             Manifest.permission.CAMERA,
         )
 

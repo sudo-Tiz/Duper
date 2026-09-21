@@ -17,7 +17,7 @@ The Camera permission is used only to control the device torch during a ring ale
 
 Location uses location permissions, including background location when the app is closed. The optional ADB-only WRITE_SECURE_SETTINGS permission lets Duper attempt to enable Android location services when they are off; it is not needed when location services are already enabled.
 
-Ring and Locate are disabled by default. Ring can use an optional password; Locate requires its own secret. The app requests only the permissions needed when you enable each mode.
+Ring and Locate are disabled by default. Ring can use an optional password and optional SMS confirmation; Locate requires its own secret and sends SMS responses. The app requests only the permissions needed when you enable each mode.
 
 For privacy, remote commands run only while the phone is locked and stop when it is unlocked.
 

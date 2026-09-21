@@ -26,11 +26,13 @@ import fr.sudotiz.duper.R
 fun RingModeCard(
     ringEnabled: Boolean,
     ringPassword: String,
+    ringReplyEnabled: Boolean,
     ringDuration: String,
     ringDurationError: String?,
     ringtoneName: String,
     onRingEnabledChange: (Boolean) -> Unit,
     onPasswordChange: (String) -> Unit,
+    onReplyEnabledChange: (Boolean) -> Unit,
     onDurationChange: (String) -> Unit,
     onChooseRingtone: () -> Unit,
 ) {
@@ -47,6 +49,22 @@ fun RingModeCard(
                 Text(stringResource(R.string.ring_enable_label), style = MaterialTheme.typography.bodyLarge)
                 Switch(checked = ringEnabled, onCheckedChange = onRingEnabledChange)
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(R.string.ring_reply_label), style = MaterialTheme.typography.bodyLarge)
+                Switch(checked = ringReplyEnabled, onCheckedChange = onReplyEnabledChange)
+            }
+            Text(
+                stringResource(R.string.ring_reply_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 

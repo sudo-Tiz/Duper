@@ -39,7 +39,11 @@ class SmsReceiver : BroadcastReceiver() {
                     notify(context, sender, R.string.command_ring, R.string.command_refused_unlocked)
                 } else {
                     Log.d(TAG, "Ring command detected! Starting alert...")
-                    val replied = SmsUtil.send(context, sender, context.getString(R.string.sms_ring_activated))
+                    val replied = if (prefs.ringReplyEnabled) {
+                        SmsUtil.send(context, sender, context.getString(R.string.sms_ring_activated))
+                    } else {
+                        false
+                    }
                     prefs.recordCommand(CommandType.RING, sender)
 
                     val alertIntent = Intent(context, AlertService::class.java).apply {
@@ -48,7 +52,11 @@ class SmsReceiver : BroadcastReceiver() {
                     startService(context, alertIntent)
                     notify(
                         context, sender, R.string.command_ring,
-                        if (replied) R.string.command_reply_sent else R.string.command_reply_not_sent
+                        when {
+                            !prefs.ringReplyEnabled -> R.string.command_reply_disabled
+                            replied -> R.string.command_reply_sent
+                            else -> R.string.command_reply_not_sent
+                        }
                     )
                 }
 

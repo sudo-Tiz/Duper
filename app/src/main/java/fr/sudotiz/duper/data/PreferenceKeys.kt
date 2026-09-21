@@ -7,6 +7,7 @@ object PreferenceKeys {
     const val LOCATE_ENABLED = "locate_enabled"
     const val COMMAND_PREFIX = "command_prefix"
     const val RING_PASSWORD = "ring_password"
+    const val RING_REPLY_ENABLED = "ring_reply_enabled"
     const val LOCATE_SECRET = "locate_secret"
     const val SECURE_COMMANDS_MIGRATED = "secure_commands_migrated"
     const val RING_DURATION = "ring_duration"

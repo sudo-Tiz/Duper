@@ -34,6 +34,10 @@ class PreferencesRepository(context: Context) {
         get() = prefs.getString(PreferenceKeys.RING_PASSWORD, "") ?: ""
         set(value) = prefs.edit { putString(PreferenceKeys.RING_PASSWORD, value) }
 
+    var ringReplyEnabled: Boolean
+        get() = prefs.getBoolean(PreferenceKeys.RING_REPLY_ENABLED, false)
+        set(value) = prefs.edit { putBoolean(PreferenceKeys.RING_REPLY_ENABLED, value) }
+
     var locateSecret: String
         get() = prefs.getString(PreferenceKeys.LOCATE_SECRET, "") ?: ""
         set(value) = prefs.edit { putString(PreferenceKeys.LOCATE_SECRET, value) }

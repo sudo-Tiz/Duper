@@ -18,6 +18,8 @@
     <string name="ring_password_label">Mot de passe Sonnerie (optionnel)</string>
     <string name="ring_password_placeholder">ex. : abc123</string>
     <string name="ring_commands_hint">Commandes : préfixe ou préfixe ring. Avec mot de passe : préfixe mot-de-passe ou préfixe ring mot-de-passe.</string>
+    <string name="ring_reply_label">Envoyer une confirmation par SMS</string>
+    <string name="ring_reply_hint">Lorsqu\'elle est désactivée, la sonnerie démarre sans répondre à l\'expéditeur.</string>
     <string name="ring_duration_label">Durée de sonnerie (secondes)</string>
     <string name="ring_current_ringtone">Sonnerie actuelle : %1$s</string>
     <string name="ring_choose_ringtone">Choisir une sonnerie</string>
@@ -66,6 +68,7 @@
     <string name="command_locate">Localisation</string>
     <string name="command_reply_sent">De %1$s : réponse SMS envoyée</string>
     <string name="command_reply_not_sent">De %1$s : réponse SMS non envoyée</string>
+    <string name="command_reply_disabled">De %1$s : sonnerie activée sans réponse SMS</string>
     <string name="command_refused_disabled">De %1$s : mode désactivé</string>
     <string name="command_refused_password">De %1$s : mot de passe incorrect</string>
     <string name="command_refused_secret">De %1$s : secret incorrect</string>

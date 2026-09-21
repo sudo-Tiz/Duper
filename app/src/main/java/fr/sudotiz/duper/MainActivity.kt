@@ -1,6 +1,7 @@
 package fr.sudotiz.duper
 
 import android.app.Activity
+import android.content.pm.PackageManager
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
@@ -32,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -85,6 +87,12 @@ fun DuperApp(viewModel: MainViewModel = viewModel()) {
     val notificationLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { }
+
+    val ringReplyLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) viewModel.updateRingReplyEnabled(true)
+    }
 
     val backgroundLocationLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -160,6 +168,7 @@ fun DuperApp(viewModel: MainViewModel = viewModel()) {
             RingModeCard(
                 ringEnabled = viewModel.ringEnabled,
                 ringPassword = viewModel.ringPassword,
+                ringReplyEnabled = viewModel.ringReplyEnabled,
                 ringDuration = viewModel.ringDuration,
                 ringDurationError = viewModel.ringDurationError,
                 ringtoneName = ringtoneName,
@@ -175,6 +184,18 @@ fun DuperApp(viewModel: MainViewModel = viewModel()) {
                     }
                 },
                 onPasswordChange = viewModel::onRingPasswordChange,
+                onReplyEnabledChange = { enabled ->
+                    if (!enabled) {
+                        viewModel.updateRingReplyEnabled(false)
+                    } else if (ContextCompat.checkSelfPermission(
+                            context, android.Manifest.permission.SEND_SMS
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        viewModel.updateRingReplyEnabled(true)
+                    } else {
+                        ringReplyLauncher.launch(android.Manifest.permission.SEND_SMS)
+                    }
+                },
                 onDurationChange = viewModel::onRingDurationChange,
                 onChooseRingtone = {
                     val intent = android.content.Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {

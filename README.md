@@ -33,7 +33,7 @@ Android app to find your phone remotely via SMS commands.
 | `<prefix> <ring-password>` or `<prefix> ring <ring-password>` | Triggers alarm when Ring Mode is enabled and a Ring password is set |
 | `<prefix> locate <locate-secret>` | Sends GPS coordinates via SMS when Locate Mode is enabled |
 
-Ring and Locate are disabled by default. Ring can use an optional password. Locate requires its own non-empty secret.
+Ring and Locate are disabled by default. Ring can use an optional password and optional SMS confirmation. Locate requires its own non-empty secret and sends SMS responses.
 For privacy, remote commands only run while the phone is locked. A command received while it is unlocked is refused without an SMS reply.
 
 ## Permissions
