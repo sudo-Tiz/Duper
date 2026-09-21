@@ -105,9 +105,9 @@ class AlertService : Service() {
         if (isRinging) return
         isRinging = true
         val duration = prefs.ringDuration * 1000L
-        startRingtone(prefs.ringtoneUri)
-        startVibration()
-        startFlashing()
+        if (prefs.ringAudioEnabled) startRingtone(prefs.ringtoneUri)
+        if (prefs.ringVibrationEnabled) startVibration()
+        if (prefs.ringFlashEnabled) startFlashing()
         handler.removeCallbacks(stopAlertRunnable)
         handler.postDelayed(stopAlertRunnable, duration)
     }

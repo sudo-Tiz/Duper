@@ -58,6 +58,18 @@ class PreferencesRepository(context: Context) {
         get() = prefs.getString(PreferenceKeys.RINGTONE_URI, null)
         set(value) = prefs.edit { putString(PreferenceKeys.RINGTONE_URI, value) }
 
+    var ringFlashEnabled: Boolean
+        get() = prefs.getBoolean(PreferenceKeys.RING_FLASH_ENABLED, true)
+        set(value) = prefs.edit { putBoolean(PreferenceKeys.RING_FLASH_ENABLED, value) }
+
+    var ringVibrationEnabled: Boolean
+        get() = prefs.getBoolean(PreferenceKeys.RING_VIBRATION_ENABLED, true)
+        set(value) = prefs.edit { putBoolean(PreferenceKeys.RING_VIBRATION_ENABLED, value) }
+
+    var ringAudioEnabled: Boolean
+        get() = prefs.getBoolean(PreferenceKeys.RING_AUDIO_ENABLED, true)
+        set(value) = prefs.edit { putBoolean(PreferenceKeys.RING_AUDIO_ENABLED, value) }
+
     var lastCommandTime: Long
         get() = prefs.getLong(PreferenceKeys.LAST_COMMAND_TIME, 0L)
         set(value) = prefs.edit { putLong(PreferenceKeys.LAST_COMMAND_TIME, value) }

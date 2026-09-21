@@ -14,6 +14,9 @@ object PreferenceKeys {
     const val LOCATE_DURATION = "locate_duration"
     const val LOCATE_INTERVAL = "locate_interval"
     const val RINGTONE_URI = "ringtone_uri"
+    const val RING_FLASH_ENABLED = "ring_flash_enabled"
+    const val RING_VIBRATION_ENABLED = "ring_vibration_enabled"
+    const val RING_AUDIO_ENABLED = "ring_audio_enabled"
 
     const val LAST_COMMAND_TIME = "last_command_time"
     const val LAST_COMMAND_SENDER = "last_command_sender"

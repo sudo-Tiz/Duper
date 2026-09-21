@@ -17,12 +17,16 @@
 
     <!-- Ring mode card -->
     <string name="ring_title">Ring Mode</string>
-    <string name="ring_enable_label">Enable Ring Mode</string>
     <string name="ring_password_label">Ring password (optional)</string>
     <string name="ring_password_placeholder">e.g., abc123</string>
     <string name="ring_commands_hint">Commands: prefix or prefix ring. If a password is set: prefix password or prefix ring password.</string>
-    <string name="ring_reply_label">Send SMS confirmation</string>
+<string name="ring_reply_label">Send SMS confirmation</string>
     <string name="ring_reply_hint">When disabled, Ring starts without replying to the sender.</string>
+
+    <string name="ring_flash_label">Flash</string>
+    <string name="ring_vibration_label">Vibrate</string>
+    <string name="ring_audio_label">Sound</string>
+
     <string name="ring_duration_label">Ring Duration (seconds)</string>
     <string name="ring_current_ringtone">Current ringtone: %1$s</string>
     <string name="ring_choose_ringtone">Choose Ringtone</string>
@@ -32,7 +36,6 @@
 
     <!-- Locate mode card -->
     <string name="locate_title">Locate Mode</string>
-    <string name="locate_enable_label">Enable Locate Mode</string>
     <string name="locate_secret_label">Locate secret</string>
     <string name="locate_secret_placeholder">Required to enable Locate</string>
     <string name="locate_secret_hint">Command: prefix locate secret</string>

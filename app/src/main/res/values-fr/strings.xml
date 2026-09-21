@@ -15,12 +15,16 @@
 
     <!-- Ring mode card -->
     <string name="ring_title">Mode Sonnerie</string>
-    <string name="ring_enable_label">Activer le mode Sonnerie</string>
     <string name="ring_password_label">Mot de passe Sonnerie (optionnel)</string>
     <string name="ring_password_placeholder">ex. : abc123</string>
     <string name="ring_commands_hint">Commandes : préfixe ou préfixe ring. Avec mot de passe : préfixe mot-de-passe ou préfixe ring mot-de-passe.</string>
-    <string name="ring_reply_label">Envoyer une confirmation par SMS</string>
+<string name="ring_reply_label">Envoyer une confirmation par SMS</string>
     <string name="ring_reply_hint">Lorsqu\'elle est désactivée, la sonnerie démarre sans répondre à l\'expéditeur.</string>
+
+    <string name="ring_flash_label">Flash</string>
+    <string name="ring_vibration_label">Vibrer</string>
+    <string name="ring_audio_label">Son</string>
+
     <string name="ring_duration_label">Durée de sonnerie (secondes)</string>
     <string name="ring_current_ringtone">Sonnerie actuelle : %1$s</string>
     <string name="ring_choose_ringtone">Choisir une sonnerie</string>
@@ -30,7 +34,6 @@
 
     <!-- Locate mode card -->
     <string name="locate_title">Mode Localisation</string>
-    <string name="locate_enable_label">Activer le mode Localisation</string>
     <string name="locate_secret_label">Secret de localisation</string>
     <string name="locate_secret_placeholder">Requis pour activer Localisation</string>
     <string name="locate_secret_hint">Commande : préfixe locate secret</string>

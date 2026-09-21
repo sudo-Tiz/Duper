@@ -169,6 +169,9 @@ fun DuperApp(viewModel: MainViewModel = viewModel()) {
                 ringEnabled = viewModel.ringEnabled,
                 ringPassword = viewModel.ringPassword,
                 ringReplyEnabled = viewModel.ringReplyEnabled,
+                ringFlashEnabled = viewModel.ringFlashEnabled,
+                ringVibrationEnabled = viewModel.ringVibrationEnabled,
+                ringAudioEnabled = viewModel.ringAudioEnabled,
                 ringDuration = viewModel.ringDuration,
                 ringDurationError = viewModel.ringDurationError,
                 ringtoneName = ringtoneName,
@@ -196,6 +199,9 @@ fun DuperApp(viewModel: MainViewModel = viewModel()) {
                         ringReplyLauncher.launch(android.Manifest.permission.SEND_SMS)
                     }
                 },
+                onFlashEnabledChange = viewModel::updateRingFlashEnabled,
+                onVibrationEnabledChange = viewModel::updateRingVibrationEnabled,
+                onAudioEnabledChange = viewModel::updateRingAudioEnabled,
                 onDurationChange = viewModel::onRingDurationChange,
                 onChooseRingtone = {
                     val intent = android.content.Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {

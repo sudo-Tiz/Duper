@@ -27,44 +27,31 @@ fun RingModeCard(
     ringEnabled: Boolean,
     ringPassword: String,
     ringReplyEnabled: Boolean,
+    ringFlashEnabled: Boolean,
+    ringVibrationEnabled: Boolean,
+    ringAudioEnabled: Boolean,
     ringDuration: String,
     ringDurationError: String?,
     ringtoneName: String,
     onRingEnabledChange: (Boolean) -> Unit,
     onPasswordChange: (String) -> Unit,
     onReplyEnabledChange: (Boolean) -> Unit,
+    onFlashEnabledChange: (Boolean) -> Unit,
+    onVibrationEnabledChange: (Boolean) -> Unit,
+    onAudioEnabledChange: (Boolean) -> Unit,
     onDurationChange: (String) -> Unit,
     onChooseRingtone: () -> Unit,
 ) {
     Card {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(stringResource(R.string.ring_title), style = MaterialTheme.typography.titleLarge)
-            Spacer(modifier = Modifier.height(8.dp))
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(stringResource(R.string.ring_enable_label), style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(R.string.ring_title), style = MaterialTheme.typography.titleLarge)
                 Switch(checked = ringEnabled, onCheckedChange = onRingEnabledChange)
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(stringResource(R.string.ring_reply_label), style = MaterialTheme.typography.bodyLarge)
-                Switch(checked = ringReplyEnabled, onCheckedChange = onReplyEnabledChange)
-            }
-            Text(
-                stringResource(R.string.ring_reply_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -83,6 +70,50 @@ fun RingModeCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(R.string.ring_reply_label), style = MaterialTheme.typography.bodyLarge)
+                Switch(checked = ringReplyEnabled, onCheckedChange = onReplyEnabledChange)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(R.string.ring_flash_label), style = MaterialTheme.typography.bodyLarge)
+                Switch(checked = ringFlashEnabled, onCheckedChange = onFlashEnabledChange)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(R.string.ring_vibration_label), style = MaterialTheme.typography.bodyLarge)
+                Switch(checked = ringVibrationEnabled, onCheckedChange = onVibrationEnabledChange)
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(R.string.ring_audio_label), style = MaterialTheme.typography.bodyLarge)
+                Switch(checked = ringAudioEnabled, onCheckedChange = onAudioEnabledChange)
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
