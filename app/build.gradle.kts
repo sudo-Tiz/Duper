@@ -11,8 +11,8 @@ android {
         minSdk = 24
         // targetSdk 37 prevents the locked-screen alarm from playing on GrapheneOS.
         targetSdk = 36
-        versionCode = 1001005
-        versionName = "1.1.5"
+        versionCode = 2000001
+        versionName = "2.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
