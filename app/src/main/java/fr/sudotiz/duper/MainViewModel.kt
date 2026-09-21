@@ -86,6 +86,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun updateLocateEnabled(value: Boolean) { locateEnabled = value; prefs.locateEnabled = value }
 
     fun onPrefixChange(value: String) {
+        if (value.any { it.isWhitespace() }) return
         commandPrefix = value
         prefixError = if (value.isBlank()) {
             app.getString(R.string.error_prefix_empty_commands)

@@ -12,6 +12,7 @@
     <!-- Command prefix card -->
     <string name="prefix_title">Command Prefix</string>
     <string name="prefix_label">Prefix (e.g., \'duper\')</string>
+    <string name="prefix_hint">Use one word without spaces.</string>
     <string name="prefix_commands_hint">Command prefix: \"%1$s\"</string>
 
     <!-- Ring mode card -->

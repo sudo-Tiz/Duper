@@ -28,6 +28,8 @@ class LocationService : DuperForegroundService(), LocationListener {
     private var senderPhoneNumber: String? = null
     private var isTracking = false
     private var lastLocation: Location? = null
+    private var lastSentLocationTime = 0L
+    private var unlockReceiverRegistered = false
 
     private val prefs by lazy { (applicationContext as DuperApplication).preferencesRepository }
 
@@ -44,11 +46,13 @@ class LocationService : DuperForegroundService(), LocationListener {
     private val sendLocationRunnable = object : Runnable {
         override fun run() {
             if (isTracking) {
-                lastLocation?.let { sendLocationSms(it) }
+                lastLocation?.takeIf { it.time > lastSentLocationTime }?.let { sendLocationSms(it) }
                 handler.postDelayed(this, prefs.locateInterval * 1000L)
             }
         }
     }
+
+    private val stopTrackingRunnable = Runnable { stopTracking() }
 
     private val unlockReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -67,9 +71,10 @@ class LocationService : DuperForegroundService(), LocationListener {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_START_LOCATE -> {
+                if (isTracking) stopTracking(stopService = false)
                 senderPhoneNumber = intent.getStringExtra(EXTRA_SENDER)
                 buildAndStartForeground()
-                if (!isTracking) registerUnlockReceiver()
+                registerUnlockReceiver()
                 startTracking()
             }
             ACTION_STOP_LOCATE -> {
@@ -149,11 +154,16 @@ class LocationService : DuperForegroundService(), LocationListener {
                 }
             }
 
+            lastSentLocationTime = 0L
             lastLocation = locationManager?.getLastKnownLocation(LocationManager.GPS_PROVIDER)
                 ?: locationManager?.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+            lastLocation = lastLocation?.takeIf {
+                System.currentTimeMillis() - it.time <= MAX_LAST_LOCATION_AGE_MS
+            }
 
             handler.post(sendLocationRunnable)
-            handler.postDelayed({ stopTracking() }, prefs.locateDuration * 1000L)
+            handler.removeCallbacks(stopTrackingRunnable)
+            handler.postDelayed(stopTrackingRunnable, prefs.locateDuration * 1000L)
 
             Log.d(TAG, "Location tracking started")
         } catch (e: SecurityException) {
@@ -218,6 +228,7 @@ class LocationService : DuperForegroundService(), LocationListener {
                 "https://www.openstreetmap.org/?mlat=${location.latitude}&mlon=${location.longitude}" +
                 "#map=18/${location.latitude}/${location.longitude}"
         )
+        lastSentLocationTime = location.time
         prefs.recordLocation(location.latitude, location.longitude)
     }
 
@@ -251,17 +262,21 @@ class LocationService : DuperForegroundService(), LocationListener {
     override fun onProviderEnabled(provider: String) { Log.d(TAG, "Provider enabled: $provider") }
     override fun onProviderDisabled(provider: String) { Log.d(TAG, "Provider disabled: $provider") }
 
-    private fun stopTracking() {
+    private fun stopTracking(stopService: Boolean = true) {
         isTracking = false
         handler.removeCallbacks(sendLocationRunnable)
-        runCatching { unregisterReceiver(unlockReceiver) }
+        handler.removeCallbacks(stopTrackingRunnable)
+        if (unlockReceiverRegistered) {
+            unregisterReceiver(unlockReceiver)
+            unlockReceiverRegistered = false
+        }
         try {
             locationManager?.removeUpdates(this)
         } catch (e: Exception) {
             Log.e(TAG, "Error removing location updates", e)
         }
         Log.d(TAG, "Location tracking stopped")
-        stopSelf()
+        if (stopService) stopSelf()
     }
 
     override fun onDestroy() {
@@ -277,11 +292,13 @@ class LocationService : DuperForegroundService(), LocationListener {
             @Suppress("DEPRECATION")
             registerReceiver(unlockReceiver, filter)
         }
+        unlockReceiverRegistered = true
     }
 
     companion object {
         private const val TAG = "LocationService"
         private const val GPS_UPDATE_INTERVAL_MS = 5000L
+        private const val MAX_LAST_LOCATION_AGE_MS = 60_000L
 
         const val ACTION_START_LOCATE = "fr.sudotiz.duper.START_LOCATE"
         const val ACTION_STOP_LOCATE = "fr.sudotiz.duper.STOP_LOCATE"
