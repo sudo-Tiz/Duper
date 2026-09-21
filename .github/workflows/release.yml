@@ -5,6 +5,10 @@ on:
     branches: ["main"]
   workflow_dispatch:
 
+concurrency:
+  group: release-main
+  cancel-in-progress: false
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -43,8 +47,8 @@ jobs:
         run: |
           echo "$KEYSTORE_B64" | base64 -d > app/my-release-key.jks
 
-      - name: Install semantic-release
-        run: npm install -g semantic-release @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/github @semantic-release/exec
+      - name: Install release dependencies
+        run: npm ci
 
       - name: Create Release
         env:

@@ -80,7 +80,6 @@ Requires USB debugging enabled. One-time setup.
 - [x] Store metadata: update Fastlane descriptions and add initial screenshots.
 - [ ] Sender blocking: local normalized blacklist with add, edit, search, paste, and removal.
 - [ ] Optional Do Not Disturb support without making Ring depend on the access.
-- [ ] CI/CD reliability: JDK 17, lint and minified-release validation, reproducible versions, pinned tooling, and caching.
 - [ ] F-Droid readiness: replace screenshots with current secured-command and permission screens.
 - [ ] Import/export: UTF-8 blacklist files through the system document picker, with import preview and validation.
 

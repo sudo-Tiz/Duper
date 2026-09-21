@@ -17,5 +17,4 @@ jobs:
           java-version: '17'
 
       - name: Validate Gradle build
-        run: ./gradlew :app:assembleDebug
-
+        run: ./gradlew :app:lintDebug :app:assembleDebug
