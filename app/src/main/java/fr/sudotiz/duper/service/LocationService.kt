@@ -214,7 +214,9 @@ class LocationService : DuperForegroundService(), LocationListener {
         SmsUtil.send(
             this,
             senderPhoneNumber,
-            "${location.latitude}, ${location.longitude} ($provider$accuracy)"
+            "${location.latitude}, ${location.longitude} ($provider$accuracy)\n" +
+                "https://www.openstreetmap.org/?mlat=${location.latitude}&mlon=${location.longitude}" +
+                "#map=18/${location.latitude}/${location.longitude}"
         )
         prefs.recordLocation(location.latitude, location.longitude)
     }
