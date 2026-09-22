@@ -1,0 +1,9 @@
+Mise à jour majeure de sécurité et de confidentialité.
+
+- Sonnerie et Localisation désactivées par défaut
+- Localisation exige un secret dédié ; Sonnerie peut avoir son mot de passe
+- Commandes seulement quand le téléphone est verrouillé
+- Toggles flash, son, vibration ; confirmation SMS optionnelle pour Sonnerie
+- SMS de position avec lien OpenStreetMap ; SMS longs en multi-parties
+- Notifications des commandes acceptées/refusées ; sauvegarde Android désactivée
+- Corrections de fiabilité et compatibilité GrapheneOS

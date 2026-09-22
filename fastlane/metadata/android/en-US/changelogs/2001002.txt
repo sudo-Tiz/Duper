@@ -1,0 +1,9 @@
+Major security and privacy update.
+
+- Ring and Locate now disabled by default
+- Locate requires a dedicated secret; Ring can use its own optional password
+- Commands only run while the phone is locked
+- Toggle flash, sound, vibration; optional SMS confirmation for Ring
+- Location SMS includes an OpenStreetMap link; long SMS sent as multipart
+- Notifications for accepted/refused commands; Android backup disabled
+- Reliability and GrapheneOS compatibility fixes
