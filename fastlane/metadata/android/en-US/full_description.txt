@@ -1,3 +1,7 @@
+Lost your phone? Send it "duper".
+
+Why "Duper"? It's French verlan (backwards slang) for "perdu" — meaning "lost". Reverse the syllables: du-per. The app that finds what's lost, named after being lost.
+
 Duper lets you remotely control your Android phone using SMS commands. It has no account, server, tracking SDK, or internet permission. Secrets, settings, command history, and location data stay on the device and are excluded from Android backups and device transfers.
 
 Send "duper ring" to make your phone ring with the flashlight blinking. Useful when you've lost your phone nearby. Device and Do Not Disturb policies may limit alerts.
