@@ -1,3 +1,7 @@
+Téléphone perdu ? Envoie-lui « duper ».
+
+Pourquoi « Duper » ? C'est du verlan (argot à l'envers) de « perdu ». Inverse les syllabes : du-per. L'application qui retrouve, nommée d'après ce qui est perdu.
+
 Duper vous permet de contrôler votre téléphone Android à distance par SMS. L'application n'a ni compte, ni serveur, ni SDK de suivi, ni permission Internet. Les secrets, réglages, historique de commandes et données de localisation restent sur l'appareil et sont exclus des sauvegardes et transferts Android.
 
 Envoyez "duper ring" pour faire sonner votre téléphone avec le flash qui clignote. Pratique quand vous avez perdu votre téléphone à proximité. Les politiques de l'appareil et du mode Ne pas déranger peuvent limiter les alertes.
