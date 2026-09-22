@@ -17,7 +17,13 @@ object SmsUtil {
                 @Suppress("DEPRECATION")
                 SmsManager.getDefault()
             }
-            smsManager.sendTextMessage(phoneNumber, null, message, null, null)
+
+            val parts = smsManager.divideMessage(message)
+            if (parts.size == 1) {
+                smsManager.sendTextMessage(phoneNumber, null, message, null, null)
+            } else {
+                smsManager.sendMultipartTextMessage(phoneNumber, null, parts, null, null)
+            }
             return true
         } catch (e: Exception) {
             Log.e(TAG, "Error sending SMS", e)

@@ -218,18 +218,20 @@ class LocationService : DuperForegroundService(), LocationListener {
         return gps || net
     }
 
-    private fun sendLocationSms(location: Location) {
-        val accuracy = if (location.hasAccuracy()) " \u00b1${location.accuracy.toInt()}m" else ""
+    private fun sendLocationSms(location: Location): Boolean {
+        val accuracy = if (location.hasAccuracy()) " +/-${location.accuracy.toInt()}m" else ""
         val provider = location.provider ?: "unknown"
-        SmsUtil.send(
-            this,
-            senderPhoneNumber,
-            "${location.latitude}, ${location.longitude} ($provider$accuracy)\n" +
-                "https://www.openstreetmap.org/?mlat=${location.latitude}&mlon=${location.longitude}" +
-                "#map=18/${location.latitude}/${location.longitude}"
-        )
-        lastSentLocationTime = location.time
-        prefs.recordLocation(location.latitude, location.longitude)
+        val message = "${location.latitude}, ${location.longitude} ($provider$accuracy)\n" +
+            "https://www.openstreetmap.org/?mlat=${location.latitude}&mlon=${location.longitude}" +
+            "#map=18/${location.latitude}/${location.longitude}"
+        val sent = SmsUtil.send(this, senderPhoneNumber, message)
+        if (sent) {
+            lastSentLocationTime = location.time
+            prefs.recordLocation(location.latitude, location.longitude)
+        } else {
+            Log.e(TAG, "Failed to send location SMS to $senderPhoneNumber")
+        }
+        return sent
     }
 
     override fun onLocationChanged(location: Location) {

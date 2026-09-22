@@ -61,11 +61,11 @@
     <string name="notification_channel_alert_name">Duper Alerts</string>
     <string name="notification_channel_alert_description">Notifications for Duper SMS alerts</string>
     <string name="notification_alert_title">Duper Ring</string>
-    <string name="notification_alert_text">Alert active…</string>
+    <string name="notification_alert_text">Alert active...</string>
     <string name="notification_channel_location_name">Duper Location</string>
     <string name="notification_channel_location_description">Location tracking notifications</string>
     <string name="notification_location_title">Duper Locate</string>
-    <string name="notification_location_text">Tracking location…</string>
+    <string name="notification_location_text">Tracking location...</string>
     <string name="notification_channel_commands_name">Duper Commands</string>
     <string name="notification_command_title">%1$s command</string>
     <string name="command_ring">Ring</string>
@@ -83,6 +83,6 @@
     <string name="sms_locate_received">Duper: Locate command received, working on it</string>
     <string name="sms_location_permission_denied">Duper: Location permission not granted, cannot locate</string>
     <string name="sms_location_disabled">Duper: Location is OFF and I cannot turn it on. Grant WRITE_SECURE_SETTINGS via ADB to allow auto-enable.</string>
-    <string name="sms_location_enabling">Duper: Location is OFF, attempting to enable it…</string>
-    <string name="sms_location_started">Duper: Location ON (%1$s), sending coordinates…</string>
+    <string name="sms_location_enabling">Duper: Location is OFF, attempting to enable it...</string>
+    <string name="sms_location_started">Duper: Location ON (%1$s), sending coordinates...</string>
 </resources>
