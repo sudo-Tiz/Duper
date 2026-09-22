@@ -59,11 +59,11 @@
     <string name="notification_channel_alert_name">Alertes Duper</string>
     <string name="notification_channel_alert_description">Notifications pour les alertes SMS de Duper</string>
     <string name="notification_alert_title">Duper Ring</string>
-    <string name="notification_alert_text">Alerte en cours…</string>
+    <string name="notification_alert_text">Alerte en cours...</string>
     <string name="notification_channel_location_name">Localisation Duper</string>
     <string name="notification_channel_location_description">Notifications de suivi de position</string>
     <string name="notification_location_title">Duper Localise</string>
-    <string name="notification_location_text">Suivi de position en cours…</string>
+    <string name="notification_location_text">Suivi de position en cours...</string>
     <string name="notification_channel_commands_name">Commandes Duper</string>
     <string name="notification_command_title">Commande %1$s</string>
     <string name="command_ring">Sonnerie</string>
@@ -78,9 +78,9 @@
 
     <!-- SMS messages -->
     <string name="sms_ring_activated">Duper : Sonnerie activée, le téléphone sonne maintenant</string>
-    <string name="sms_locate_received">Duper : Commande locate reçue, en cours…</string>
+    <string name="sms_locate_received">Duper : Commande locate reçue, en cours...</string>
     <string name="sms_location_permission_denied">Duper : Permission de localisation non accordée, impossible de localiser</string>
     <string name="sms_location_disabled">Duper : La localisation est DÉSACTIVÉE et je ne peux pas l\'activer. Accordez WRITE_SECURE_SETTINGS via ADB pour permettre l\'activation automatique.</string>
-    <string name="sms_location_enabling">Duper : Localisation DÉSACTIVÉE, tentative d\'activation…</string>
-    <string name="sms_location_started">Duper : Localisation ON (%1$s), envoi des coordonnées…</string>
+    <string name="sms_location_enabling">Duper : Localisation DÉSACTIVÉE, tentative d\'activation...</string>
+    <string name="sms_location_started">Duper : Localisation ON (%1$s), envoi des coordonnées...</string>
 </resources>
