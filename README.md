@@ -1,5 +1,7 @@
 # Duper
 
+**Lost your phone? Send it "duper".**
+
 Android app to find your phone remotely via SMS commands.
 [![F-Droid](https://img.shields.io/f-droid/v/fr.sudotiz.duper?label=F-Droid)](https://f-droid.org/packages/fr.sudotiz.duper)
 
