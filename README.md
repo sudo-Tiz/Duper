@@ -3,7 +3,11 @@
 **Lost your phone? Send it "duper".**
 
 Find your Android phone remotely via SMS. No internet needed on the target device.
+
+## Badges
+
 [![F-Droid](https://img.shields.io/f-droid/v/fr.sudotiz.duper?label=F-Droid)](https://f-droid.org/packages/fr.sudotiz.duper)
+[![GitHub Release](https://img.shields.io/github/v/release/sudo-Tiz/Duper)](https://github.com/sudo-Tiz/Duper/releases)
 
 > **Why "Duper"?** French *verlan* for *perdu* ("lost"): **du-per**. The app that finds what's lost.
 

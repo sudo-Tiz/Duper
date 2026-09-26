@@ -3,7 +3,11 @@
 **Téléphone perdu ? Envoyez-lui un « duper ».**
 
 Retrouvez votre téléphone Android à distance par SMS. Aucun Internet nécessaire sur l'appareil cible.
+
+## Badges
+
 [![F-Droid](https://img.shields.io/f-droid/v/fr.sudotiz.duper?label=F-Droid)](https://f-droid.org/packages/fr.sudotiz.duper)
+[![GitHub Release](https://img.shields.io/github/v/release/sudo-Tiz/Duper)](https://github.com/sudo-Tiz/Duper/releases)
 
 > **Pourquoi « Duper » ?** Verlan français de *perdu* : **du-per**. L'app qui retrouve ce qui est perdu.
 
